@@ -1,0 +1,8 @@
+### Maven ###
+target
+
+### Intellij Idea ###
+.idea
+
+### Other ###
+src/main/java/test
