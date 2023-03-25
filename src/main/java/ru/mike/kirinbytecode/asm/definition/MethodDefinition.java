@@ -16,6 +16,8 @@ public class MethodDefinition<T> implements Definition {
     private String methodDescriptor;
     private DefaultMethodGenerator<T> methodGenerator;
     private InterceptorImplementation implementation;
+    private AfterMethodDefinition afterMethodDefinition;
+    private BeforeMethodDefinition beforeMethodDefinition;
 
     public MethodDefinition(ProxyClassDefinition<T> definition, Method method) {
         this.method = method;

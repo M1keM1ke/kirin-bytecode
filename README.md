@@ -54,3 +54,19 @@ Object obj = new KirinBytecode()
                 .load()
                 .newInstance(null, null);
 ```
+- adding additional logic before and after executing proxy method:
+```
+Object obj = new KirinBytecode()
+                .subclass(Object.class)
+                    .method(named("toString")).intercept(FixedValue.value("helloWorld"))
+                    .before(() -> {
+                    //some code
+                    })
+                    .after(() -> {
+                    //some code
+                    })
+                .make()
+                .load()
+                .newInstance(null, null);
+```
+

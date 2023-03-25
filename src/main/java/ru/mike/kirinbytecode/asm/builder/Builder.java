@@ -18,7 +18,8 @@ public interface Builder<T> {
      *
      * @param name имя поля
      * @param type тип поля
-     * @param modifiers список модификаторов из {@link org.objectweb.asm.Opcodes}
+     * @param modifiers список модификаторов из {@link org.objectweb.asm.Opcodes}, необязательный параметр.
+     * Если нет модификаторов, то по умолчанию присваивается модификатор {@link org.objectweb.asm.Opcodes#ACC_PUBLIC}
      * @return {@link FieldDefinitionBuilder<T>} для описания значения
      */
     FieldDefinitionBuilder<T> defineField(String name, Type type, @Nullable Integer...modifiers);

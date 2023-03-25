@@ -67,7 +67,7 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
 
     @Override
     public FieldDefinitionBuilder<T> defineField(String name, Type type, Integer... modifiers) {
-        definition.getProxyClassFieldsDefinition().addProxyField(name, type, modifiers);
+        definition.getProxyClassFieldsDefinition().createFieldDefinition(name, type, modifiers);
 
         return new DefaultFieldDefinitionBuilder<>(definition, name, this);
     }

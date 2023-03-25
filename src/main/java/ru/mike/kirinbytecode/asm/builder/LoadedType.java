@@ -21,6 +21,12 @@ public class LoadedType<T> {
 
         T instance = generatedClazz.getDeclaredConstructor(parameterTypes).newInstance(initArgs);
 
+        fillEmptyFields(instance);
+
+        return instance;
+    }
+
+    private void fillEmptyFields(T instance) throws IllegalAccessException {
         for (Field field : instance.getClass().getDeclaredFields()) {
             String fieldName = field.getName();
             FieldDefinition<T> fieldDefinition = definition.getProxyClassFieldsDefinition().getProxyFields().get(fieldName);
@@ -31,8 +37,6 @@ public class LoadedType<T> {
 
             field.set(instance, fieldDefinition.getValue());
         }
-
-        return instance;
     }
 
     public Class<? extends T> getLoaded() {

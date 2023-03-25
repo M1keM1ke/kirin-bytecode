@@ -16,6 +16,8 @@ public interface FieldDefinitionBuilder<T> {
      * @param value значение поля
      * @return {@link SubclassDynamicTypeBuilder<T>}
      */
-    SubclassDynamicTypeBuilder<T> value(@Nullable Object value);
+    FieldDefinitionBuilder<T> value(@Nullable Object value);
+
+    SubclassDynamicTypeBuilder<T> and();
 
 }

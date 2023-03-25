@@ -28,6 +28,11 @@ public class FieldDefinition<T> implements Definition {
         this.modifiers = modifiers;
     }
 
+    public FieldDefinition(ProxyClassDefinition<T> definition, String name, Object value, Type type, Integer[] modifiers) {
+        this(definition, name, type, modifiers);
+        this.value = value;
+    }
+
     public int getSumOfModifiers() {
         int sum = 0;
 

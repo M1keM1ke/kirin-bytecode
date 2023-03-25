@@ -37,7 +37,7 @@ public class DefaultClassGenerator<T> implements Generator, Opcodes {
         cn = new ClassNode(ASM9);
         cn.version = V1_8;
         cn.access = ACC_PUBLIC;
-        cn.name = definition.getProxyPackageName() + "/" + className;
+        cn.name = definition.getProxyPackageName().replaceAll("\\.", "/") + "/" + className;
         cn.superName = TransformerUtil.transformClassNameToAsmClassName(clazz);
 
         MethodNode defaultConstructor = createDefaultConstructor(clazz);

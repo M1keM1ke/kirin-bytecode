@@ -24,7 +24,7 @@ public class DefaultFieldDefinitionBuilder<T> implements FieldDefinitionBuilder<
     }
 
     @Override
-    public SubclassDynamicTypeBuilder<T> value(@Nullable Object value) {
+    public FieldDefinitionBuilder<T> value(@Nullable Object value) {
         Map<String, FieldDefinition<T>> proxyFields = definition.getProxyClassFieldsDefinition().getProxyFields();
 
         if (!proxyFields.containsKey(fieldName)) {
@@ -34,6 +34,11 @@ public class DefaultFieldDefinitionBuilder<T> implements FieldDefinitionBuilder<
         FieldDefinition<T> fieldDefinition = proxyFields.get(fieldName);
         fieldDefinition.setValue(value);
 
+        return this;
+    }
+
+    @Override
+    public SubclassDynamicTypeBuilder<T> and() {
         return subclassDynamicTypeBuilder;
     }
 }
