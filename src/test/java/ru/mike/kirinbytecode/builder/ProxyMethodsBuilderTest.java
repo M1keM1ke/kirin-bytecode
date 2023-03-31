@@ -4,7 +4,6 @@ import org.junit.jupiter.api.Test;
 import ru.mike.kirinbytecode.asm.KirinBytecode;
 import ru.mike.kirinbytecode.asm.exception.MethodNotFoundException;
 import ru.mike.kirinbytecode.asm.matcher.FixedValue;
-import ru.mike.kirinbytecode.asm.util.ElementMatchersUtil;
 import ru.mike.kirinbytecode.util.DummyClassA;
 
 import java.lang.reflect.Field;
@@ -15,6 +14,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.mike.kirinbytecode.asm.util.ElementMatchersUtil.named;
 import static ru.mike.kirinbytecode.util.TestConstants.DUMMY_METHOD_DEFAULT_PROXY_RETURN_VALUE;
 import static ru.mike.kirinbytecode.util.TestConstants.DummyMethod1.DUMMY_METHOD_1_NAME;
 import static ru.mike.kirinbytecode.util.TestConstants.DummyMethod1.DUMMY_METHOD_1_PROXY_RETURN_VALUE;
@@ -31,7 +31,7 @@ public class ProxyMethodsBuilderTest {
                 MethodNotFoundException.class,
                 () -> new KirinBytecode()
                             .subclass(DummyClassA.class)
-                            .method(ElementMatchersUtil.named(randomMethodName))
+                            .method(named(randomMethodName))
                             .intercept(FixedValue.value(DUMMY_METHOD_DEFAULT_PROXY_RETURN_VALUE))
                         .and()
                             .make()
@@ -46,7 +46,7 @@ public class ProxyMethodsBuilderTest {
 
         DummyClassA proxy = new KirinBytecode()
                     .subclass(DummyClassA.class)
-                    .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
+                    .method(named(DUMMY_METHOD_1_NAME))
                     .intercept(FixedValue.value(proxyMethodReturnValue))
                 .and()
                     .make()
@@ -65,10 +65,10 @@ public class ProxyMethodsBuilderTest {
 
         DummyClassA proxy = new KirinBytecode()
                     .subclass(DummyClassA.class)
-                    .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
+                    .method(named(DUMMY_METHOD_1_NAME))
                     .intercept(FixedValue.value(proxyMethod1ReturnValue))
                 .and()
-                    .method(ElementMatchersUtil.named(DUMMY_METHOD_2_NAME))
+                    .method(named(DUMMY_METHOD_2_NAME))
                     .intercept(FixedValue.value(proxyMethod2ReturnValue))
                 .and()
                     .make()
@@ -90,10 +90,10 @@ public class ProxyMethodsBuilderTest {
                 ClassFormatError.class,
                 () -> new KirinBytecode()
                         .subclass(DummyClassA.class)
-                        .method(ElementMatchersUtil.named(proxyMethodName))
+                        .method(named(proxyMethodName))
                         .intercept(FixedValue.value(proxyMethod1ReturnValue))
                     .and()
-                        .method(ElementMatchersUtil.named(proxyMethodName))
+                        .method(named(proxyMethodName))
                         .intercept(FixedValue.value(proxyMethod1ReturnValue))
                     .and()
                         .make()
@@ -108,7 +108,7 @@ public class ProxyMethodsBuilderTest {
 
         DummyClassA proxy = new KirinBytecode()
                     .subclass(DummyClassA.class)
-                    .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
+                    .method(named(DUMMY_METHOD_1_NAME))
                     .intercept(FixedValue.value(DUMMY_METHOD_1_PROXY_RETURN_VALUE))
                     .after(() -> numbers.add(1))
                 .and()
@@ -143,7 +143,7 @@ public class ProxyMethodsBuilderTest {
 
         DummyClassA proxy = new KirinBytecode()
                     .subclass(DummyClassA.class)
-                    .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
+                    .method(named(DUMMY_METHOD_1_NAME))
                     .intercept(FixedValue.value(DUMMY_METHOD_1_PROXY_RETURN_VALUE))
                     .after(() -> numbers.add(1))
                     .after(() -> numbers.add(1))
@@ -179,7 +179,7 @@ public class ProxyMethodsBuilderTest {
 
         DummyClassA proxy = new KirinBytecode()
                 .subclass(DummyClassA.class)
-                .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
+                .method(named(DUMMY_METHOD_1_NAME))
                 .intercept(FixedValue.value(DUMMY_METHOD_1_PROXY_RETURN_VALUE))
                 .before(() -> numbers.add(1))
                 .and()
@@ -214,7 +214,7 @@ public class ProxyMethodsBuilderTest {
 
         DummyClassA proxy = new KirinBytecode()
                     .subclass(DummyClassA.class)
-                    .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
+                    .method(named(DUMMY_METHOD_1_NAME))
                     .intercept(FixedValue.value(DUMMY_METHOD_1_PROXY_RETURN_VALUE))
                     .before(() -> numbers.add(1))
                     .before(() -> numbers.add(1))

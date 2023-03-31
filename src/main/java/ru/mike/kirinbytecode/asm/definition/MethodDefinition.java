@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.objectweb.asm.Type;
 import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
-import ru.mike.kirinbytecode.asm.generator.node.DefaultMethodGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.method.DefaultMethodGenerator;
 
 import java.lang.reflect.Method;
 

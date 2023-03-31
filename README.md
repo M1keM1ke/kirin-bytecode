@@ -23,6 +23,16 @@ Object obj = new KirinBytecode()
                 .load()
                 .newInstance(null, null);
 ```
+You cal also call super method in proxying method by follow:
+```
+Object obj = new KirinBytecode()
+                .subclass(Object.class)
+                .method(named("toString")).intercept(SuperValue.value())
+                .make()
+                .load()
+                .newInstance(null, null);
+```
+
 - define fields. You can define field in proxy class and
 initialize it by follow:  
 ```
