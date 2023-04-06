@@ -19,6 +19,7 @@ import static ru.mike.kirinbytecode.asm.util.ElementMatchersUtil.nameStartsWith;
 import static ru.mike.kirinbytecode.asm.util.ElementMatchersUtil.nameStartsWithIgnoreCase;
 import static ru.mike.kirinbytecode.asm.util.ElementMatchersUtil.named;
 import static ru.mike.kirinbytecode.asm.util.ElementMatchersUtil.namedIgnoreCase;
+import static ru.mike.kirinbytecode.util.TestConstants.DUMMY_METHOD_CHARACTER_PROXY_RETURN_VALUE;
 import static ru.mike.kirinbytecode.util.TestConstants.DUMMY_METHOD_DEFAULT_PROXY_RETURN_VALUE;
 import static ru.mike.kirinbytecode.util.TestConstants.DUMMY_METHOD_NAME_ENDS_WITH;
 import static ru.mike.kirinbytecode.util.TestConstants.DUMMY_METHOD_NAME_ENDS_WITH_IGNORE_CASE;
@@ -115,7 +116,7 @@ public class NameMatcherTest {
 
     @Test
     public void givenDummyClassA_whenProxyingMethodByEndsWithNameMatcher_thenOk() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        String proxyMethodReturnValue = DUMMY_METHOD_DEFAULT_PROXY_RETURN_VALUE;
+        Character proxyMethodReturnValue = DUMMY_METHOD_CHARACTER_PROXY_RETURN_VALUE;
         Predicate<Method> methodsFilterPredicate = f -> f.getName().endsWith(DUMMY_METHOD_NAME_ENDS_WITH);
 
         DummyClassA proxy = new KirinBytecode()
@@ -132,7 +133,7 @@ public class NameMatcherTest {
 
     @Test
     public void givenDummyClassA_whenProxyingMethodByEndsWithIgnoreCaseNameMatcher_thenOk() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        String proxyMethodReturnValue = DUMMY_METHOD_DEFAULT_PROXY_RETURN_VALUE;
+        Character proxyMethodReturnValue = DUMMY_METHOD_CHARACTER_PROXY_RETURN_VALUE;
         Predicate<Method> methodsFilterPredicate = f -> f.getName().toLowerCase().endsWith(DUMMY_METHOD_NAME_ENDS_WITH_IGNORE_CASE.toLowerCase());
 
         DummyClassA proxy = new KirinBytecode()
@@ -148,7 +149,7 @@ public class NameMatcherTest {
         assertProxyingMethodsByMatcher(methodsFilterPredicate, proxy, proxyMethodReturnValue);
     }
 
-    private void assertProxyingMethodsByMatcher(Predicate<Method> methodsFilterPredicate, DummyClassA proxy, String proxyingMethodsReturnValue) throws IllegalAccessException, InvocationTargetException {
+    private void assertProxyingMethodsByMatcher(Predicate<Method> methodsFilterPredicate, DummyClassA proxy, Object proxyingMethodsReturnValue) throws IllegalAccessException, InvocationTargetException {
         List<Method> dummyClassAMethods = Arrays.stream(DummyClassA.class.getDeclaredMethods())
                 .filter(methodsFilterPredicate)
                 .collect(Collectors.toList());

@@ -6,13 +6,16 @@ import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.exception.ReturnTypeCastException;
+import ru.mike.kirinbytecode.asm.generator.node.method.type.original.OriginalReturnTypeChainBuilder;
 import ru.mike.kirinbytecode.asm.matcher.FixedValue;
 
 import java.lang.reflect.Method;
+import java.util.Objects;
 
+import static jdk.dynalink.linker.support.TypeUtilities.isWrapperType;
 import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
-import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.ASM9;
+import static sun.invoke.util.Wrapper.asPrimitiveType;
 
 @AutoService(InterceptorNodeGeneratorHandler.class)
 public class FixedValueInterceptorNodeGeneratorHandler<T> implements InterceptorNodeGeneratorHandler<T> {
@@ -26,13 +29,19 @@ public class FixedValueInterceptorNodeGeneratorHandler<T> implements Interceptor
     public MethodNode generateMethodNode(ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition) {
         FixedValue fixedValueImp = (FixedValue) methodDefinition.getImplementation();
 
-        String interceptedReturnValue = fixedValueImp.getValue();
+        Object interceptedReturnValue = fixedValueImp.getValue();
         Method interceptedMethod = methodDefinition.getMethod();
 
         Class<?> originalReturnType = interceptedMethod.getReturnType();
-        Class<? extends String> interceptedReturnType = interceptedReturnValue.getClass();
+        Class<?> interceptedReturnType = interceptedReturnValue.getClass();
 
-        if (!originalReturnType.equals(interceptedReturnType)) {
+//      если возвращаемый тип в оригинальном методе класса - примитивный тип, а тип значения для
+//      прокси метода - обертка, то необходимо скастить обертку к примитиву, иначе будет ReturnTypeCastException
+        if (originalReturnType.isPrimitive() && isWrapperType(interceptedReturnType)) {
+            interceptedReturnType = asPrimitiveType(interceptedReturnType);
+        }
+
+        if (!Objects.equals(originalReturnType, interceptedReturnType)) {
             throw new ReturnTypeCastException("Unable to intercept method:" + interceptedMethod +
                     ". Return types are not equals. Expected:'" + originalReturnType + "', but got " + interceptedReturnType);
         }
@@ -47,8 +56,7 @@ public class FixedValueInterceptorNodeGeneratorHandler<T> implements Interceptor
         generateBeforeMethodDefinitionCall(definition, methodDefinition.getBeforeMethodDefinition(), mn);
         generateAfterMethodDefinitionCall(definition, methodDefinition.getAfterMethodDefinition(), mn);
 
-        mn.visitLdcInsn(interceptedReturnValue);
-        mn.visitInsn(ARETURN);
+        OriginalReturnTypeChainBuilder.buildChain().generate(mn, definition, methodDefinition);
 
         return mn;
     }

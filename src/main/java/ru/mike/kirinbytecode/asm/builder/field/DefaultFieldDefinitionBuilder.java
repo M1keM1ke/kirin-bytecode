@@ -1,5 +1,6 @@
 package ru.mike.kirinbytecode.asm.builder.field;
 
+import ru.mike.kirinbytecode.asm.builder.Builder;
 import ru.mike.kirinbytecode.asm.builder.SubclassDynamicTypeBuilder;
 import ru.mike.kirinbytecode.asm.definition.FieldDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
@@ -38,7 +39,7 @@ public class DefaultFieldDefinitionBuilder<T> implements FieldDefinitionBuilder<
     }
 
     @Override
-    public SubclassDynamicTypeBuilder<T> and() {
+    public Builder<T> and() {
         return subclassDynamicTypeBuilder;
     }
 }

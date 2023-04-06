@@ -37,15 +37,15 @@ public interface InterceptorNodeGeneratorHandler<T> {
         mn.visitVarInsn(ASTORE, 1);
     }
 
-    default void generateBeforeMethodDefinitionCall(ProxyClassDefinition<T> definition, BeforeMethodDefinition beforeMethodDefinition, MethodNode methodNode) {
-        generateStageMethodDefinitionCall(definition, beforeMethodDefinition, methodNode);
+    default void generateBeforeMethodDefinitionCall(ProxyClassDefinition<T> definition, BeforeMethodDefinition beforeMethodDefinition, MethodNode mn) {
+        generateStageMethodDefinitionCall(definition, beforeMethodDefinition, mn);
     }
 
-    default void generateAfterMethodDefinitionCall(ProxyClassDefinition<T> definition, AfterMethodDefinition afterMethodDefinition, MethodNode methodNode) {
-        generateStageMethodDefinitionCall(definition, afterMethodDefinition, methodNode);
+    default void generateAfterMethodDefinitionCall(ProxyClassDefinition<T> definition, AfterMethodDefinition afterMethodDefinition, MethodNode mn) {
+        generateStageMethodDefinitionCall(definition, afterMethodDefinition, mn);
     }
 
-    private void generateStageMethodDefinitionCall(ProxyClassDefinition<T> definition, StageMethodDefinition stageMethodDefinition, MethodNode methodNode) {
+    private void generateStageMethodDefinitionCall(ProxyClassDefinition<T> definition, StageMethodDefinition stageMethodDefinition, MethodNode mn) {
         if (Objects.isNull(stageMethodDefinition)) {
             return;
         }
@@ -54,16 +54,16 @@ public interface InterceptorNodeGeneratorHandler<T> {
                 .getFieldNameGenerator()
                 .getGeneratedName(null);
 
-        methodNode.visitVarInsn(ALOAD, 0);
+        mn.visitVarInsn(ALOAD, 0);
 
-        methodNode.visitFieldInsn(
+        mn.visitFieldInsn(
                 GETFIELD,
                 definition.getProxyPackageName().replaceAll("\\.", "/") + "/" + definition.getNameGenerator().getGeneratedName(definition.getOriginalClazz().getSimpleName()),
                 fieldGeneratedName,
                 RUNNABLE_BEFORE_FIELD_DESCRIPTOR
         );
 
-        methodNode.visitMethodInsn(INVOKEINTERFACE, "java/lang/Runnable", "run", "()V", true);
+        mn.visitMethodInsn(INVOKEINTERFACE, "java/lang/Runnable", "run", "()V", true);
 
 //      создаем и добавляем FieldDefinition в мапу, чтобы в LoadedType.fillEmptyFields()
 //      заполнить сгенерированное поле значением stageMethodDefinition.getRunnableStage()

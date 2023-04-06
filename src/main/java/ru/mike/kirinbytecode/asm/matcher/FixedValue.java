@@ -7,13 +7,13 @@ import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
 @Getter
 @Setter
 public class FixedValue implements InterceptorImplementation {
-    private String value;
+    private Object value;
 
-    public FixedValue(String value) {
+    public FixedValue(Object value) {
         this.value = value;
     }
 
-    public static InterceptorImplementation value(String value) {
+    public static InterceptorImplementation value(Object value) {
         return new FixedValue(value);
     }
 }

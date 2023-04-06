@@ -16,7 +16,11 @@ public class LoadedType<T> {
         this.definition = definition;
     }
 
-    public T newInstance(@Nullable Class<?>[] parameterTypes, Object[] initArgs) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+    public T newInstance() throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
+        return newInstance(null, null);
+    }
+
+    public T newInstance(@Nullable Class<?>[] parameterTypes, @Nullable Object[] initArgs) throws NoSuchMethodException, InvocationTargetException, InstantiationException, IllegalAccessException {
         Class<? extends T> generatedClazz = definition.getGeneratedClazz();
 
         T instance = generatedClazz.getDeclaredConstructor(parameterTypes).newInstance(initArgs);

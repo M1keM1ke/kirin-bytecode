@@ -16,8 +16,8 @@ public class TestConstants {
     }
 
     public static class DummyMethod3 {
-        public static final String DUMMY_METHOD_3_NAME = "dummyMethod3";
-        public static final String DUMMY_METHOD_3_RETURN_VALUE = "dummyMethod3ReturnValue";
+        public static final String DUMMY_METHOD_3_NAME = "dummy3Method";
+        public static final Character DUMMY_METHOD_3_RETURN_VALUE = 'x';
         public static final String DUMMY_METHOD_3_PROXY_NAME_RETURN_VALUE = "dummyProxyMethod3ReturnValue";
     }
 
@@ -28,5 +28,6 @@ public class TestConstants {
 
 
     public static final String DUMMY_METHOD_DEFAULT_PROXY_RETURN_VALUE = "dummyProxyMethodDefaultReturnValue";
+    public static final Character DUMMY_METHOD_CHARACTER_PROXY_RETURN_VALUE = 'x';
 
 }

@@ -1,5 +1,6 @@
 package ru.mike.kirinbytecode.asm.builder.field;
 
+import ru.mike.kirinbytecode.asm.builder.Builder;
 import ru.mike.kirinbytecode.asm.builder.SubclassDynamicTypeBuilder;
 
 import javax.annotation.Nullable;
@@ -18,6 +19,6 @@ public interface FieldDefinitionBuilder<T> {
      */
     FieldDefinitionBuilder<T> value(@Nullable Object value);
 
-    SubclassDynamicTypeBuilder<T> and();
+    Builder<T> and();
 
 }
