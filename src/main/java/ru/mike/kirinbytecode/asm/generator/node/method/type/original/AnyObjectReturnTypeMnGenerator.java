@@ -1,6 +1,6 @@
 package ru.mike.kirinbytecode.asm.generator.node.method.type.original;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.log4j.Log4j2;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.MethodNode;
 import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
@@ -14,7 +14,7 @@ import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.GETFIELD;
 
-@Slf4j
+@Log4j2
 public class AnyObjectReturnTypeMnGenerator extends OriginalReturnTypeMnGenerator {
 
     public AnyObjectReturnTypeMnGenerator(OriginalReturnTypeMnGenerator next) {
