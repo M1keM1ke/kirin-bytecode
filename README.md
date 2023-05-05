@@ -10,7 +10,7 @@ Object obj = new KirinBytecode()
                 .subclass(Object.class)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 ```
 - proxying methods. You can proxy methods of the parent class
 by using matchers. Example below show how you can find method
@@ -21,7 +21,7 @@ Object obj = new KirinBytecode()
                 .method(named("toString")).intercept(FixedValue.value("helloWorld"))
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 ```
 You cal also call super method in proxying method by follow:
 ```
@@ -30,7 +30,7 @@ Object obj = new KirinBytecode()
                 .method(named("toString")).intercept(SuperValue.value())
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 ```
 
 - define fields. You can define field in proxy class and
@@ -41,7 +41,7 @@ Object obj = new KirinBytecode()
                 .defineField("f1", Object.class, ACC_PUBLIC + ACC_STATIC).value(new Object())
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 ```
 - implementing interfaces. You can implement interfaces in your 
 proxy class by follow:  
@@ -52,7 +52,7 @@ Object obj = new KirinBytecode()
                 .implement(Serializable.class)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 ```
 - naming proxy class. You can name your proxy class
 by follow:  
@@ -62,7 +62,7 @@ Object obj = new KirinBytecode()
                 .name("ProxyClass")
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 ```
 - adding additional logic before and after executing proxy method:
 ```
@@ -77,6 +77,6 @@ Object obj = new KirinBytecode()
                     })
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 ```
 

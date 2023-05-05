@@ -1,4 +1,4 @@
-package ru.mike.kirinbytecode.asm.exception;
+package ru.mike.kirinbytecode.asm.exception.notfound;
 
 public class DefinitionNotFoundException extends RuntimeException {
 

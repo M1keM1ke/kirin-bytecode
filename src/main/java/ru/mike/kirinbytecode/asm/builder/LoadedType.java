@@ -2,7 +2,7 @@ package ru.mike.kirinbytecode.asm.builder;
 
 import ru.mike.kirinbytecode.asm.definition.FieldDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
-import ru.mike.kirinbytecode.asm.exception.FieldNotFoundException;
+import ru.mike.kirinbytecode.asm.exception.notfound.FieldNotFoundException;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Field;

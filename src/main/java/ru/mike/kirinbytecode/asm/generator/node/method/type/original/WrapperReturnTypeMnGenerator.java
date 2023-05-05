@@ -13,6 +13,7 @@ import static jdk.dynalink.linker.support.TypeUtilities.isWrapperType;
 import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
 import static ru.mike.kirinbytecode.asm.util.AsmUtil.getMethodDescriptor;
+import static ru.mike.kirinbytecode.asm.util.Constants.Methods.VALUE_OF_NAME;
 import static sun.invoke.util.Wrapper.asPrimitiveType;
 
 @Log4j2
@@ -47,13 +48,21 @@ public class WrapperReturnTypeMnGenerator extends OriginalReturnTypeMnGenerator 
 
         if (isWrapperType(originalReturnType)) {
             mn.visitLdcInsn(interceptedReturnValue);
-            Optional<String> valueOfMethodDescOpt = getMethodDescriptor(originalReturnType, "valueOf", new Class[] {asPrimitiveType(originalReturnType)});
+            Optional<String> valueOfMethodDescOpt = getMethodDescriptor(
+                    originalReturnType, VALUE_OF_NAME, new Class[] {asPrimitiveType(originalReturnType)}
+            );
 
             if (valueOfMethodDescOpt.isEmpty()) {
                 throw new RuntimeException("Unable to get method descriptor of 'valueOf' method in class:" + originalReturnType);
             }
 
-            mn.visitMethodInsn(INVOKESTATIC, originalReturnType.getName().replaceAll("\\.", "/"), "valueOf", valueOfMethodDescOpt.get(), false);
+            mn.visitMethodInsn(
+                    INVOKESTATIC,
+                    originalReturnType.getName().replaceAll("\\.", "/"),
+                    VALUE_OF_NAME,
+                    valueOfMethodDescOpt.get(),
+                    false
+            );
 
             mn.visitInsn(ARETURN);
             return mn;

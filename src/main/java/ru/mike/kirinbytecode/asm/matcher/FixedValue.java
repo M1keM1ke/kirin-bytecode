@@ -13,7 +13,15 @@ public class FixedValue implements InterceptorImplementation {
         this.value = value;
     }
 
+    public FixedValue() {
+        this.value = null;
+    }
+
     public static InterceptorImplementation value(Object value) {
         return new FixedValue(value);
+    }
+
+    public static InterceptorImplementation value() {
+        return new FixedValue();
     }
 }

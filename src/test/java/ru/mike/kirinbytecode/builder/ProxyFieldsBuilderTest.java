@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.objectweb.asm.Opcodes;
 import ru.mike.kirinbytecode.asm.KirinBytecode;
 import ru.mike.kirinbytecode.asm.exception.ProxyFieldAlreadyExistsException;
-import ru.mike.kirinbytecode.util.DummyClassA;
+import ru.mike.kirinbytecode.util.dummy.DummyClassA;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -34,7 +34,7 @@ public class ProxyFieldsBuilderTest implements Opcodes {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Field[] proxyFields = proxy.getClass().getDeclaredFields();
 
@@ -73,7 +73,7 @@ public class ProxyFieldsBuilderTest implements Opcodes {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Map<String, Field> proxyFields = Arrays
                 .stream(proxy.getClass().getDeclaredFields())
@@ -132,7 +132,7 @@ public class ProxyFieldsBuilderTest implements Opcodes {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Field[] proxyFields = proxy.getClass().getDeclaredFields();
 
@@ -161,7 +161,7 @@ public class ProxyFieldsBuilderTest implements Opcodes {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Field[] proxyFields = proxy.getClass().getDeclaredFields();
 

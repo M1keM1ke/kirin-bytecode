@@ -30,4 +30,12 @@ public class TestConstants {
     public static final String DUMMY_METHOD_DEFAULT_PROXY_RETURN_VALUE = "dummyProxyMethodDefaultReturnValue";
     public static final Character DUMMY_METHOD_CHARACTER_PROXY_RETURN_VALUE = 'x';
 
+    public static final String DUMMY_PRIVATE_VOID_METHOD_NAME = "dummyPrivateVoidMethod";
+    public static final String DUMMY_PRIVATE_VOID_METHOD_WITH_1_PARAM_NAME = "dummyPrivateVoidMethodWith1Param";
+    public static final String DUMMY_PUBLIC_FINAL_VOID_METHOD_NAME = "dummyPublicFinalVoidMethod";
+    public static final String DUMMY_PUBLIC_FINAL_VOID_METHOD_WITH_1_PARAM_NAME = "dummyPublicFinalVoidMethodWith1Param";
+    public static final String DUMMY_PUBLIC_VOID_METHOD_WITH_1_PARAM_NAME = "dummyPublicVoidMethodWith1Param";
+    public static final String DUMMY_PUBLIC_VOID_METHOD_WITH_2_PARAM_NAME = "dummyPublicVoidMethodWith2Param";
+    public static final String DUMMY_PUBLIC_VOID_METHOD_WITH_3_PARAM_NAME = "dummyPublicVoidMethodWith3Param";
+
 }

@@ -2,7 +2,7 @@ package ru.mike.kirinbytecode.builder;
 
 import org.junit.jupiter.api.Test;
 import ru.mike.kirinbytecode.asm.KirinBytecode;
-import ru.mike.kirinbytecode.util.DummyClassA;
+import ru.mike.kirinbytecode.util.dummy.DummyClassA;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +22,7 @@ public class BaseProxyBuilderTest {
                 .subclass(DummyClassA.class)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         assertNotNull(proxy.getClass().getSuperclass());
         assertTrue(DummyClassA.class.isAssignableFrom(proxy.getClass().getSuperclass()));
@@ -34,7 +34,7 @@ public class BaseProxyBuilderTest {
                 .subclass(Object.class)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         assertNotNull(proxy.getClass().getSuperclass());
         assertEquals(DEFAULT_PROXY_PACKAGE, proxy.getClass().getPackageName());
@@ -47,7 +47,7 @@ public class BaseProxyBuilderTest {
                 .implement(Serializable.class)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Class<?>[] interfaces = proxy.getClass().getInterfaces();
 
@@ -64,7 +64,7 @@ public class BaseProxyBuilderTest {
                 .implement(Cloneable.class)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Class<?>[] interfaces = proxy.getClass().getInterfaces();
 
@@ -82,7 +82,7 @@ public class BaseProxyBuilderTest {
                 .implement(Serializable.class)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Class<?>[] interfaces = proxy.getClass().getInterfaces();
 
@@ -100,7 +100,7 @@ public class BaseProxyBuilderTest {
                 .name(proxyName)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         assertEquals(proxyName, proxy.getClass().getSimpleName());
     }
@@ -116,7 +116,7 @@ public class BaseProxyBuilderTest {
                 .name(proxyName2)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         assertEquals(proxyName1, proxy.getClass().getSimpleName());
     }
@@ -131,7 +131,7 @@ public class BaseProxyBuilderTest {
                 .name(proxyName)
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         assertEquals(proxyName, proxy.getClass().getSimpleName());
     }

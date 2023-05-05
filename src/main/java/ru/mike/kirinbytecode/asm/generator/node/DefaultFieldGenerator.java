@@ -5,7 +5,7 @@ import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.FieldNode;
 import ru.mike.kirinbytecode.asm.definition.FieldDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
-import ru.mike.kirinbytecode.asm.exception.FieldNotFoundException;
+import ru.mike.kirinbytecode.asm.exception.notfound.FieldNotFoundException;
 import ru.mike.kirinbytecode.asm.generator.Generator;
 
 import java.util.Map;

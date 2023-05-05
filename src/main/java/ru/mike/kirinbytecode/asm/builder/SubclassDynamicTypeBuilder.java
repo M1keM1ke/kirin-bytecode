@@ -12,8 +12,8 @@ import ru.mike.kirinbytecode.asm.definition.InterfaceDefinition;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassMethodsDefinition;
-import ru.mike.kirinbytecode.asm.exception.MatcherNotFoundException;
-import ru.mike.kirinbytecode.asm.exception.MethodNotFoundException;
+import ru.mike.kirinbytecode.asm.exception.notfound.MatcherNotFoundException;
+import ru.mike.kirinbytecode.asm.exception.notfound.MethodNotFoundException;
 import ru.mike.kirinbytecode.asm.generator.name.ConstantProxyClassNameGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.DefaultClassGenerator;
 import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
@@ -43,8 +43,6 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
 
     @Override
     public MethodDefinitionBuilder<T> method(NameMatcher<T> nameMatcher) {
-        definition.setNameMatcher(nameMatcher);
-
         Method[] methods = definition.getOriginalClazz().getDeclaredMethods();
 
 //      отобрали методы по фильтру

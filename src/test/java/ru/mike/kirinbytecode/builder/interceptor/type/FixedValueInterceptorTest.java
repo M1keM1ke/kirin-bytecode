@@ -1,14 +1,15 @@
-package ru.mike.kirinbytecode.builder;
+package ru.mike.kirinbytecode.builder.interceptor.type;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import ru.mike.kirinbytecode.asm.KirinBytecode;
 import ru.mike.kirinbytecode.asm.exception.ReturnTypeCastException;
+import ru.mike.kirinbytecode.asm.exception.incorrect.IncorrectModifierException;
 import ru.mike.kirinbytecode.asm.matcher.FixedValue;
-import ru.mike.kirinbytecode.asm.matcher.SuperValue;
 import ru.mike.kirinbytecode.asm.util.ElementMatchersUtil;
-import ru.mike.kirinbytecode.util.DummyClassA;
+import ru.mike.kirinbytecode.util.dummy.DummyClassA;
+import ru.mike.kirinbytecode.util.dummy.DummyClassModifiers;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -17,11 +18,14 @@ import java.util.Objects;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static ru.mike.kirinbytecode.util.DummyUtils.getRandomDummyPrimitiveMethod;
-import static ru.mike.kirinbytecode.util.DummyUtils.getRandomDummyWrapperMethod;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static ru.mike.kirinbytecode.asm.util.ElementMatchersUtil.named;
+import static ru.mike.kirinbytecode.util.TestConstants.DUMMY_PUBLIC_FINAL_VOID_METHOD_NAME;
 import static ru.mike.kirinbytecode.util.TestConstants.DummyMethod1.DUMMY_METHOD_1_NAME;
+import static ru.mike.kirinbytecode.util.dummy.DummyUtils.getRandomDummyPrimitiveMethod;
+import static ru.mike.kirinbytecode.util.dummy.DummyUtils.getRandomDummyWrapperMethod;
 
-public class ProxyInterceptorsBuilderTest {
+public class FixedValueInterceptorTest {
 
     @Test
     void givenDummyClassA_whenFixedValue_thenOk() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
@@ -34,7 +38,7 @@ public class ProxyInterceptorsBuilderTest {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         assertEquals(returnValue, proxy.dummyMethod1());
     }
@@ -52,56 +56,23 @@ public class ProxyInterceptorsBuilderTest {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         assertEquals(newReturnValue, proxy.dummyMethod1());
     }
-
-    @Test
-    void givenDummyClassA_whenSuperValue_thenOk() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        DummyClassA dummyClassA = new DummyClassA();
-
-        DummyClassA proxy = new KirinBytecode()
-                .subclass(DummyClassA.class)
-                .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
-                .intercept(SuperValue.value())
-                .and()
-                .make()
-                .load()
-                .newInstance(null, null);
-
-        assertEquals(dummyClassA.dummyMethod1(), proxy.dummyMethod1());
-    }
-
-    @Test
-    void givenDummyClassA_whenFewSuperValue_thenOk() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        DummyClassA dummyClassA = new DummyClassA();
-
-        DummyClassA proxy = new KirinBytecode()
-                .subclass(DummyClassA.class)
-                .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
-                .intercept(SuperValue.value())
-                .intercept(SuperValue.value())
-                .and()
-                .make()
-                .load()
-                .newInstance(null, null);
-
-        assertEquals(dummyClassA.dummyMethod1(), proxy.dummyMethod1());
-    }
-
+    
     @Test
     void givenDummyClassA_whenDifferentOriginalAndFixedValue_thenThrow() {
         Assertions.assertThrows(
                 ReturnTypeCastException.class,
                 () -> new KirinBytecode()
-                                .subclass(DummyClassA.class)
-                                .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
-                                .intercept(FixedValue.value(new Object()))
-                                .and()
-                                .make()
-                                .load()
-                                .newInstance(null, null)
+                        .subclass(DummyClassA.class)
+                        .method(ElementMatchersUtil.named(DUMMY_METHOD_1_NAME))
+                        .intercept(FixedValue.value(new Object()))
+                        .and()
+                        .make()
+                        .load()
+                        .newInstance(null, null)
         );
     }
 
@@ -119,7 +90,7 @@ public class ProxyInterceptorsBuilderTest {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Method[] proxyMethods = proxy.getClass().getDeclaredMethods();
 //      находим метод, который перехватывали
@@ -143,7 +114,7 @@ public class ProxyInterceptorsBuilderTest {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Method[] proxyMethods = proxy.getClass().getDeclaredMethods();
 
@@ -165,7 +136,7 @@ public class ProxyInterceptorsBuilderTest {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
         Method[] proxyMethods = proxy.getClass().getDeclaredMethods();
 //      находим метод, который перехватывали
@@ -176,5 +147,19 @@ public class ProxyInterceptorsBuilderTest {
 
         assertEquals(1, proxyMethods.length);
         assertEquals(returnedValue, interceptedMethod.invoke(proxy));
+    }
+
+    @Test
+    public void givenDummyClassModifiers_whenProxyingFinalMethodByFixedValue_thenThrow() {
+        assertThrows(
+                IncorrectModifierException.class,
+                () -> new KirinBytecode()
+                        .subclass(DummyClassModifiers.class)
+                        .method(named(DUMMY_PUBLIC_FINAL_VOID_METHOD_NAME))
+                        .intercept(FixedValue.value())
+                        .and()
+                        .make()
+                        .load()
+                        .newInstance());
     }
 }

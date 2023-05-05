@@ -18,8 +18,4 @@ public class InterfaceDefinition<T> implements Definition {
     public String getFullName(PathDelimiter delimiter) {
         return fullName.replaceAll("\\.", delimiter.getDelimiter());
     }
-
-    public static void main(String[] args) {
-        System.out.println(AutoCloseable.class.getName());
-    }
 }

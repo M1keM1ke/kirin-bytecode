@@ -7,7 +7,6 @@ import ru.mike.kirinbytecode.asm.definition.Definition;
 import ru.mike.kirinbytecode.asm.generator.NameGenerator;
 import ru.mike.kirinbytecode.asm.generator.name.DefaultUUIDLazyProxyClassNameGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.DefaultClassGenerator;
-import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
 
 import java.util.Objects;
 
@@ -26,7 +25,6 @@ public class ProxyClassDefinition<T> implements Definition {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
     private NameGenerator nameGenerator;
-    private NameMatcher<T> nameMatcher;
     private byte[] bytecodeClazz;
     private Class<? extends T> generatedClazz;
     private ProxyClassMethodsDefinition<T> proxyClassMethodsDefinition;

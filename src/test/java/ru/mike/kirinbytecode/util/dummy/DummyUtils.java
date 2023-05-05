@@ -1,4 +1,4 @@
-package ru.mike.kirinbytecode.util;
+package ru.mike.kirinbytecode.util.dummy;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

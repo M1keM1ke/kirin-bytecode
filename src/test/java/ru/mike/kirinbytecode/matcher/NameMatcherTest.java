@@ -3,7 +3,7 @@ package ru.mike.kirinbytecode.matcher;
 import org.junit.jupiter.api.Test;
 import ru.mike.kirinbytecode.asm.KirinBytecode;
 import ru.mike.kirinbytecode.asm.matcher.FixedValue;
-import ru.mike.kirinbytecode.util.DummyClassA;
+import ru.mike.kirinbytecode.util.dummy.DummyClassA;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -43,7 +43,7 @@ public class NameMatcherTest {
                 .and()
                     .make()
                     .load()
-                    .newInstance(null, null);
+                    .newInstance();
 
 
         Method[] declaredMethods = proxy.getClass().getDeclaredMethods();
@@ -67,7 +67,7 @@ public class NameMatcherTest {
                 .and()
                     .make()
                     .load()
-                    .newInstance(null, null);
+                    .newInstance();
 
 
         Method[] declaredMethods = proxy.getClass().getDeclaredMethods();
@@ -92,7 +92,7 @@ public class NameMatcherTest {
                 .and()
                     .make()
                     .load()
-                    .newInstance(null, null);
+                    .newInstance();
 
         assertProxyingMethodsByMatcher(methodsFilterPredicate, proxy, proxyMethodReturnValue);
     }
@@ -109,7 +109,7 @@ public class NameMatcherTest {
                 .and()
                     .make()
                     .load()
-                    .newInstance(null, null);
+                    .newInstance();
 
         assertProxyingMethodsByMatcher(methodsFilterPredicate, proxy, proxyMethodReturnValue);
     }
@@ -126,7 +126,7 @@ public class NameMatcherTest {
                 .and()
                     .make()
                     .load()
-                    .newInstance(null, null);
+                    .newInstance();
 
         assertProxyingMethodsByMatcher(methodsFilterPredicate, proxy, proxyMethodReturnValue);
     }
@@ -143,7 +143,7 @@ public class NameMatcherTest {
                 .and()
                 .make()
                 .load()
-                .newInstance(null, null);
+                .newInstance();
 
 
         assertProxyingMethodsByMatcher(methodsFilterPredicate, proxy, proxyMethodReturnValue);

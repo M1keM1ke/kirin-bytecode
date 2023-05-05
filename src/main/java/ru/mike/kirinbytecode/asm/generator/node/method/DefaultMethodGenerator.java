@@ -5,7 +5,7 @@ import org.objectweb.asm.tree.MethodNode;
 import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
-import ru.mike.kirinbytecode.asm.exception.InterceptorImplementationNotFoundException;
+import ru.mike.kirinbytecode.asm.exception.notfound.InterceptorImplementationNotFoundException;
 import ru.mike.kirinbytecode.asm.generator.Generator;
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.InterceptorNodeGeneratorHandler;
 
