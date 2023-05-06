@@ -1,6 +1,5 @@
 package ru.mike.kirinbytecode.asm.matcher.name;
 
-import ru.mike.kirinbytecode.asm.matcher.MatcherMode;
 import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
 
 import java.lang.reflect.Method;
@@ -16,8 +15,8 @@ public class FullyEqualsNameMatcher<T> extends NameMatcher<T> {
      */
     public FullyEqualsNameMatcher() {}
 
-    public FullyEqualsNameMatcher(String value, MatcherMode mode) {
-        super(value, mode);
+    public FullyEqualsNameMatcher(String value) {
+        super(value);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ru.mike.kirinbytecode.asm.matcher.name;
 
-import ru.mike.kirinbytecode.asm.matcher.MatcherMode;
 import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
 
 import java.lang.reflect.Method;
@@ -15,8 +14,8 @@ public class EndsWithNameMatcher<T> extends NameMatcher<T> {
      */
     public EndsWithNameMatcher() {}
 
-    public EndsWithNameMatcher(String value, MatcherMode mode) {
-        super(value, mode);
+    public EndsWithNameMatcher(String value) {
+        super(value);
     }
 
     @Override

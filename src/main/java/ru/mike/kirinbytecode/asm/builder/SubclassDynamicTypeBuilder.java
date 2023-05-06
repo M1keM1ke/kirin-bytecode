@@ -129,7 +129,7 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
 
     private List<Method> getMethodsForProxy(NameMatcher<T> nameMatcher, Method[] methods) {
         List<Method> suitableMethods = NameMatchersUtil
-                .getNameMatchersOrThrow(nameMatcher.getValue(), nameMatcher.getMode())
+                .getNameMatchersOrThrow(nameMatcher.getValue())
                 .stream()
                 .filter(nm -> nm.isCurrentNameMatcher(nameMatcher))
                 .findFirst()

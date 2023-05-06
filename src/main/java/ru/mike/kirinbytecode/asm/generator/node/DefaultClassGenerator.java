@@ -24,10 +24,7 @@ public class DefaultClassGenerator<T> implements Generator, Opcodes {
 
     @Override
     public void generateNode() {
-//      TODO: было бы прикольно сделать chain of responsibility и в верном порядке вызывать генераторы нод
-//          типа одна нода проверяет, есть ли поля, если есть, то генерит конструктор с полями и тд
         Class<T> clazz = definition.getOriginalClazz();
-
         String className = definition.getNameGenerator().getGeneratedName(clazz.getSimpleName());
 
         fillClassNode(clazz, className);

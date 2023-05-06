@@ -1,6 +1,5 @@
 package ru.mike.kirinbytecode.asm.matcher.name;
 
-import ru.mike.kirinbytecode.asm.matcher.MatcherMode;
 import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
 
 import java.lang.reflect.Method;
@@ -15,8 +14,8 @@ public class ContainsIgnoreCaseNameMatcher<T> extends NameMatcher<T> {
      */
     public ContainsIgnoreCaseNameMatcher() {}
 
-    public ContainsIgnoreCaseNameMatcher(String value, MatcherMode mode) {
-        super(value, mode);
+    public ContainsIgnoreCaseNameMatcher(String value) {
+        super(value);
     }
 
     @Override

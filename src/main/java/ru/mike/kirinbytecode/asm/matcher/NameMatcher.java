@@ -5,7 +5,6 @@ import java.util.List;
 
 public abstract class NameMatcher<T> {
     private String value;
-    private MatcherMode mode;
 
     /**
      * Дефолтный конструктор, необходим для работы создания инстанса через рефлексию в
@@ -13,9 +12,8 @@ public abstract class NameMatcher<T> {
      */
     public NameMatcher() {}
 
-    public NameMatcher(String value, MatcherMode mode) {
+    public NameMatcher(String value) {
         this.value = value;
-        this.mode = mode;
     }
 
     public String getValue() {
@@ -24,14 +22,6 @@ public abstract class NameMatcher<T> {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    public MatcherMode getMode() {
-        return mode;
-    }
-
-    public void setMode(MatcherMode mode) {
-        this.mode = mode;
     }
 
     public abstract <R> boolean isCurrentNameMatcher(NameMatcher<R> nameMatcher);

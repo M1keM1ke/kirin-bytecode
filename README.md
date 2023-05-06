@@ -3,7 +3,7 @@
 
 
 ### Features
-- base proxy. You can create proxy by inheritance like cglib.  
+- **base proxy.** You can create proxy by inheritance like bytebuddy.  
 Simple example:  
 ```
 Object obj = new KirinBytecode()
@@ -12,7 +12,7 @@ Object obj = new KirinBytecode()
                 .load()
                 .newInstance();
 ```
-- proxying methods. You can proxy methods of the parent class
+- **proxying methods.** You can proxy methods of the parent class
 by using matchers. Example below show how you can find method
 and change return value:  
 ```
@@ -32,8 +32,18 @@ Object obj = new KirinBytecode()
                 .load()
                 .newInstance();
 ```
-
-- define fields. You can define field in proxy class and
+Or if super method has parameters, you can pass them:
+```
+Object obj = new KirinBytecode()
+                .subclass(SomeClass.class)
+                .method(named("someMethod")).intercept(SuperValue.value(parameterOfSomeMethod))
+                .make()
+                .load()
+                .newInstance();
+```
+Be careful, keep order and types of passed parameters 
+as in the super class.
+- **define fields.** You can define field in proxy class and
 initialize it by follow:  
 ```
 Object obj = new KirinBytecode()
@@ -43,7 +53,7 @@ Object obj = new KirinBytecode()
                 .load()
                 .newInstance();
 ```
-- implementing interfaces. You can implement interfaces in your 
+- **implementing interfaces.** You can implement interfaces in your 
 proxy class by follow:  
 ```
 Object obj = new KirinBytecode()
@@ -54,7 +64,7 @@ Object obj = new KirinBytecode()
                 .load()
                 .newInstance();
 ```
-- naming proxy class. You can name your proxy class
+- **naming proxy class.** You can name your proxy class
 by follow:  
 ```
 Object obj = new KirinBytecode()
@@ -64,7 +74,8 @@ Object obj = new KirinBytecode()
                 .load()
                 .newInstance();
 ```
-- adding additional logic before and after executing proxy method:
+If you don't choose name for proxy class, it will be generated automatically.
+- **adding additional logic before and after executing proxy method**:
 ```
 Object obj = new KirinBytecode()
                 .subclass(Object.class)
