@@ -5,47 +5,37 @@ import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.InterceptorSuperNodeGeneratorHandler;
+import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.SuperMethodCallProperties;
 import ru.mike.kirinbytecode.asm.matcher.SuperValue;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.ASM9;
 import static ru.mike.kirinbytecode.asm.exception.incorrect.IncorrectModifierException.throwIncorrectFinal;
 import static ru.mike.kirinbytecode.asm.exception.incorrect.IncorrectModifierException.throwIncorrectPrivate;
 import static ru.mike.kirinbytecode.asm.exception.notfound.InterceptorImplementationNotFoundException.checkImplementationTypeOrThrow;
+import static ru.mike.kirinbytecode.asm.util.AsmUtil.LOADbyClass;
+import static ru.mike.kirinbytecode.asm.util.AsmUtil.RETURNbyClass;
 
 public abstract class AbstractSuperValueInterceptorGeneratorHandler<T> implements InterceptorSuperNodeGeneratorHandler<T> {
 
     @Override
     public MethodNode generateMethodNode(ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition) {
         InterceptorImplementation implementation = methodDefinition.getImplementation();
-
-        checkImplementationTypeOrThrow(SuperValue.class, implementation);
-
         Method interceptedMethod = methodDefinition.getMethod();
 
         String interceptedMethodName = interceptedMethod.getName();
         int modifiers = interceptedMethod.getModifiers();
 
+        checkImplementationTypeOrThrow(SuperValue.class, implementation);
         checkModifiersCorrectOrThrow(definition, interceptedMethodName, modifiers);
-
-        String methodDescriptor = methodDefinition.getMethodDescriptor();
-
         checkSuperMethodParamsOrThrow(methodDefinition, implementation);
 
-        MethodNode mn = new MethodNode(ASM9, modifiers, interceptedMethodName, methodDescriptor, null, null);
+        MethodNode mn = new MethodNode(ASM9, modifiers, interceptedMethodName,
+                methodDefinition.getMethodDescriptor(), null, null);
 
-        generateBeforeMethodDefinitionCall(definition, methodDefinition.getBeforeMethodDefinition(), mn);
-        generateSuperMethodCall(definition, methodDefinition, mn);
-        generateAfterMethodDefinitionCall(definition, methodDefinition.getAfterMethodDefinition(), mn);
-
-        mn.visitVarInsn(ALOAD, 1);
-        mn.visitInsn(ARETURN);
-
-        return mn;
+        return generateMethodNode(definition, methodDefinition, mn);
     }
 
     @Override
@@ -61,5 +51,26 @@ public abstract class AbstractSuperValueInterceptorGeneratorHandler<T> implement
         if (Modifier.isFinal(modifiers)) {
             throwIncorrectFinal(definition.getOriginalClazz().getName(), interceptedMethodName);
         }
+    }
+
+    private MethodNode generateMethodNode(
+            ProxyClassDefinition<T> definition,
+            MethodDefinition<T> methodDefinition,
+            MethodNode mn
+    ) {
+        Method interceptedMethod = methodDefinition.getMethod();
+
+        generateBeforeMethodDefinitionCall(definition, methodDefinition.getBeforeMethodDefinition(), mn);
+        SuperMethodCallProperties superMethodCallProperties = generateSuperMethodCall(definition, methodDefinition, mn);
+        generateAfterMethodDefinitionCall(definition, methodDefinition.getAfterMethodDefinition(), mn);
+
+        Class<?> interceptedMethodReturnType = interceptedMethod.getReturnType();
+        mn.visitVarInsn(
+                LOADbyClass(interceptedMethodReturnType),
+                superMethodCallProperties.getLastLOADOpcodeNumber()
+        );
+        mn.visitInsn(RETURNbyClass(interceptedMethodReturnType));
+
+        return mn;
     }
 }

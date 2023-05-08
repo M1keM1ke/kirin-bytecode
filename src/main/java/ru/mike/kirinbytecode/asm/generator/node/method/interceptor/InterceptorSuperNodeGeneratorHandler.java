@@ -10,12 +10,12 @@ public interface InterceptorSuperNodeGeneratorHandler<T> extends InterceptorNode
 
     /**
      * Генерирует {@link MethodNode} с вызовом супер-метода оригинального класса
-     *
-     * @param definition описание, содержащее оригинальный класс
+     *  @param definition описание, содержащее оригинальный класс
      * @param methodDefinition описание, содержащее супер-метод оригинального класса {@link MethodDefinition#getMethod()}
      * @param mn пустая нода, в которой производится вызов супер-метода
+     * @return настройки, сохраненные при генерации метода
      */
-    void generateSuperMethodCall(ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition, MethodNode mn);
+    SuperMethodCallProperties generateSuperMethodCall(ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition, MethodNode mn);
 
     /**
      * Проверяет параметры супер-метода, сравнивая их с передаваемыми (если параметры вообще есть)

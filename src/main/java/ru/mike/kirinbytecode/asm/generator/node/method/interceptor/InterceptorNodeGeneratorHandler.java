@@ -14,7 +14,7 @@ import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
 import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.GETFIELD;
 import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
-import static ru.mike.kirinbytecode.asm.definition.BeforeMethodDefinition.RUNNABLE_BEFORE_FIELD_DESCRIPTOR;
+import static ru.mike.kirinbytecode.asm.definition.StageMethodDefinition.RUNNABLE_FIELD_DESCRIPTOR;
 
 public interface InterceptorNodeGeneratorHandler<T> {
 
@@ -46,7 +46,7 @@ public interface InterceptorNodeGeneratorHandler<T> {
                 GETFIELD,
                 definition.getProxyPackageName().replaceAll("\\.", "/") + "/" + definition.getNameGenerator().getGeneratedName(definition.getOriginalClazz().getSimpleName()),
                 fieldGeneratedName,
-                RUNNABLE_BEFORE_FIELD_DESCRIPTOR
+                RUNNABLE_FIELD_DESCRIPTOR
         );
 
         mn.visitMethodInsn(INVOKEINTERFACE, "java/lang/Runnable", "run", "()V", true);

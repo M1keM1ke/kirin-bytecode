@@ -7,11 +7,7 @@ import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.matcher.FixedValue;
 
-import java.util.Objects;
-
-import static org.objectweb.asm.Opcodes.DRETURN;
-import static org.objectweb.asm.Opcodes.IRETURN;
-import static org.objectweb.asm.Opcodes.LRETURN;
+import static ru.mike.kirinbytecode.asm.util.AsmUtil.RETURNbyClass;
 
 @Log4j2
 public class PrimitiveReturnTypeMnGenerator extends OriginalReturnTypeMnGenerator {
@@ -45,22 +41,7 @@ public class PrimitiveReturnTypeMnGenerator extends OriginalReturnTypeMnGenerato
 
         if (originalReturnType.isPrimitive()) {
             mn.visitLdcInsn(interceptedReturnValue);
-
-            if (Objects.equals(int.class, originalReturnType) ||
-                    Objects.equals(short.class, originalReturnType) ||
-                    Objects.equals(boolean.class, originalReturnType) ||
-                    Objects.equals(char.class, originalReturnType)
-            ) {
-                mn.visitInsn(IRETURN);
-            }
-
-            if (Objects.equals(double.class, originalReturnType)) {
-                mn.visitInsn(DRETURN);
-            }
-
-            if (Objects.equals(long.class, originalReturnType)) {
-                mn.visitInsn(LRETURN);
-            }
+            mn.visitInsn(RETURNbyClass(originalReturnType));
 
             return mn;
         }

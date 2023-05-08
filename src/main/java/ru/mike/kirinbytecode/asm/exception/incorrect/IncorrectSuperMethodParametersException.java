@@ -37,11 +37,16 @@ public class IncorrectSuperMethodParametersException extends RuntimeException {
         throw new IncorrectSuperMethodParametersException(errorMessage);
     }
 
-    public static void throwParamsTypesNotEquals(int paramNumber, Object superValueImpParam, Class<?> interceptedMethodParamType) {
+    public static void throwParamsTypesNotEquals(
+            String proxyMethodName,
+            int paramNumber,
+            Object superValueImpParam,
+            Class<?> interceptedMethodParamType
+    ) {
         String errorMessage = String.format(
-                "Incorrect parameters for calling super method in proxy method. Parameters types are not equals." +
-                        " Expected: %s, got: %s for parameter №%d",
-                interceptedMethodParamType, superValueImpParam.getClass(), paramNumber
+                "Incorrect parameters for calling super method in proxy method named '%s'. " +
+                        "Parameters types are not equals. Expected: %s, got: %s for parameter №%d",
+                proxyMethodName, interceptedMethodParamType, superValueImpParam.getClass(), paramNumber
         );
 
         throw new IncorrectSuperMethodParametersException(errorMessage);

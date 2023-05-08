@@ -7,6 +7,7 @@ import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.InterceptorNodeGeneratorHandler;
+import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.SuperMethodCallProperties;
 import ru.mike.kirinbytecode.asm.matcher.SuperValue;
 
 import java.util.Objects;
@@ -31,7 +32,7 @@ public class SuperValueWithoutParamsInterceptorNodeGeneratorHandler<T> extends A
     }
 
     @Override
-    public void generateSuperMethodCall(
+    public SuperMethodCallProperties generateSuperMethodCall(
             ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition, MethodNode mn
     ) {
         mn.visitVarInsn(ALOAD, 0);
@@ -42,7 +43,13 @@ public class SuperValueWithoutParamsInterceptorNodeGeneratorHandler<T> extends A
                 Type.getMethodDescriptor(methodDefinition.getMethod()),
                 false
         );
-        mn.visitVarInsn(ASTORE, 1);
+
+        int paramNumber = 1;
+        mn.visitVarInsn(ASTORE, paramNumber);
+
+        return SuperMethodCallProperties.builder()
+                .lastLOADOpcodeNumber(paramNumber)
+                .build();
     }
 
     @Override
