@@ -43,7 +43,6 @@ public class SuperValueWithParamsInterceptorNodeGeneratorHandler<T> extends Abst
         mn.visitVarInsn(ALOAD, 0);
 
         Method interceptedMethod = methodDefinition.getMethod();
-
         int paramNumber = generateLOADOpcodesForMethodParams(interceptedMethod, mn);
 
 //      вызываем супер-метод в прокси методе

@@ -13,6 +13,9 @@ import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.DLOAD;
 import static org.objectweb.asm.Opcodes.DRETURN;
 import static org.objectweb.asm.Opcodes.DSTORE;
+import static org.objectweb.asm.Opcodes.FLOAD;
+import static org.objectweb.asm.Opcodes.FRETURN;
+import static org.objectweb.asm.Opcodes.FSTORE;
 import static org.objectweb.asm.Opcodes.ILOAD;
 import static org.objectweb.asm.Opcodes.IRETURN;
 import static org.objectweb.asm.Opcodes.ISTORE;
@@ -33,24 +36,29 @@ public class AsmUtil {
     }
 
     public static int RETURNbyClass(Class<?> clazz) {
-        return opcodeByClass(clazz, IRETURN, DRETURN, LRETURN, ARETURN);
+        return opcodeByClass(clazz, IRETURN, FRETURN, DRETURN, LRETURN, ARETURN);
     }
 
     public static int LOADbyClass(Class<?> clazz) {
-        return opcodeByClass(clazz, ILOAD, DLOAD, LLOAD, ALOAD);
+        return opcodeByClass(clazz, ILOAD, FLOAD, DLOAD, LLOAD, ALOAD);
     }
 
     public static int STOREbyClass(Class<?> clazz) {
-        return opcodeByClass(clazz, ISTORE, DSTORE, LSTORE, ASTORE);
+        return opcodeByClass(clazz, ISTORE, FSTORE, DSTORE, LSTORE, ASTORE);
     }
 
-    private static int opcodeByClass(Class<?> clazz, int iOpcode, int dOpcode, int lOpcode, int aOpcode) {
+    private static int opcodeByClass(Class<?> clazz, int iOpcode, int fOpcode, int dOpcode, int lOpcode, int aOpcode) {
         if (Objects.equals(int.class, clazz) ||
                 Objects.equals(short.class, clazz) ||
                 Objects.equals(boolean.class, clazz) ||
-                Objects.equals(char.class, clazz)
+                Objects.equals(char.class, clazz) ||
+                Objects.equals(byte.class, clazz)
         ) {
             return iOpcode;
+        }
+
+        if (Objects.equals(float.class, clazz)) {
+            return fOpcode;
         }
 
         if (Objects.equals(double.class, clazz)) {

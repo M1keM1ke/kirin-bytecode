@@ -10,12 +10,13 @@ import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.InterceptorNo
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.SuperMethodCallProperties;
 import ru.mike.kirinbytecode.asm.matcher.SuperValue;
 
+import java.lang.reflect.Method;
 import java.util.Objects;
 
 import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ASTORE;
 import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
 import static ru.mike.kirinbytecode.asm.exception.incorrect.IncorrectSuperMethodParametersException.throwParamsNonNull;
+import static ru.mike.kirinbytecode.asm.util.AsmUtil.STOREbyClass;
 
 @AutoService(InterceptorNodeGeneratorHandler.class)
 public class SuperValueWithoutParamsInterceptorNodeGeneratorHandler<T> extends AbstractSuperValueInterceptorGeneratorHandler<T> {
@@ -36,16 +37,19 @@ public class SuperValueWithoutParamsInterceptorNodeGeneratorHandler<T> extends A
             ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition, MethodNode mn
     ) {
         mn.visitVarInsn(ALOAD, 0);
+
+        Method interceptedMethod = methodDefinition.getMethod();
+        int paramNumber = 1;
+
         mn.visitMethodInsn(
                 INVOKESPECIAL,
                 definition.getOriginalClazz().getName().replaceAll("\\.", "/"),
-                methodDefinition.getMethod().getName(),
-                Type.getMethodDescriptor(methodDefinition.getMethod()),
+                interceptedMethod.getName(),
+                Type.getMethodDescriptor(interceptedMethod),
                 false
         );
 
-        int paramNumber = 1;
-        mn.visitVarInsn(ASTORE, paramNumber);
+        mn.visitVarInsn(STOREbyClass(interceptedMethod.getReturnType()), paramNumber);
 
         return SuperMethodCallProperties.builder()
                 .lastLOADOpcodeNumber(paramNumber)
