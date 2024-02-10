@@ -2,26 +2,23 @@ package ru.mike.kirinbytecode.asm.definition;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.objectweb.asm.Type;
 import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
-import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
-import ru.mike.kirinbytecode.asm.generator.node.method.DefaultMethodGenerator;
+import ru.mike.kirinbytecode.asm.definition.parameter.ParameterDefinition;
+import ru.mike.kirinbytecode.asm.generator.MethodGenerator;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
-public class MethodDefinition<T> implements Definition {
-    private Method method;
-    private String methodDescriptor;
-    private DefaultMethodGenerator<T> methodGenerator;
-    private InterceptorImplementation implementation;
-    private AfterMethodDefinition afterMethodDefinition;
-    private BeforeMethodDefinition beforeMethodDefinition;
+public abstract class MethodDefinition<T> implements Definition {
+    protected String name;
+    protected Class<?> returnType;
+    protected int modifiers;
+    protected String methodDescriptor;
+    protected List<ParameterDefinition> parameterDefinitions = new ArrayList<>();
+    protected int parameterCount;
+    protected MethodGenerator<T> methodGenerator;
+    protected InterceptorImplementation implementation;
 
-    public MethodDefinition(ProxyClassDefinition<T> definition, Method method) {
-        this.method = method;
-        this.methodDescriptor = Type.getMethodDescriptor(method);
-        methodGenerator = new DefaultMethodGenerator<T>(definition);
-    }
 }

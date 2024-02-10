@@ -6,12 +6,12 @@ import org.objectweb.asm.tree.FieldNode;
 import ru.mike.kirinbytecode.asm.definition.FieldDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.exception.notfound.FieldNotFoundException;
-import ru.mike.kirinbytecode.asm.generator.Generator;
+import ru.mike.kirinbytecode.asm.generator.FieldGenerator;
 
 import java.util.Map;
 
 @Getter
-public class DefaultFieldGenerator<T> implements Generator {
+public class DefaultFieldGenerator<T> implements FieldGenerator<T> {
     private ProxyClassDefinition<T> definition;
     private FieldNode fn;
     private String fieldName;
@@ -39,5 +39,10 @@ public class DefaultFieldGenerator<T> implements Generator {
 //               value == null потому что заполнение идет после создания инстанста (см. LoadedType.newInstance)
                 null
         );
+    }
+
+    @Override
+    public FieldNode getFn() {
+        return fn;
     }
 }

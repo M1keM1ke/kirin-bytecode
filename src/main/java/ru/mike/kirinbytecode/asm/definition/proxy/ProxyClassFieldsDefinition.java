@@ -31,16 +31,16 @@ public class ProxyClassFieldsDefinition<T> implements Definition, Opcodes {
 
         if (Objects.isNull(modifiers) || modifiers.length == 0) {
             Integer[] defaultPrivateModifier = {ACC_PUBLIC};
-            fieldDefinition = new FieldDefinition<T>(definition, name, type, defaultPrivateModifier);
+            fieldDefinition = new FieldDefinition<>(definition, name, type, defaultPrivateModifier);
         } else {
-            fieldDefinition = new FieldDefinition<T>(definition, name, type, modifiers);
+            fieldDefinition = new FieldDefinition<>(definition, name, type, modifiers);
         }
 
         proxyFields.put(fieldDefinition.getName(), fieldDefinition);
     }
 
     public void createFieldDefinition(String name, Object value, Type type, Integer... modifiers) {
-        FieldDefinition<T> fieldDefinition = new FieldDefinition<T>(definition, name, value, type, modifiers);
+        FieldDefinition<T> fieldDefinition = new FieldDefinition<>(definition, name, value, type, modifiers);
 
         proxyFields.put(fieldDefinition.getName(), fieldDefinition);
     }

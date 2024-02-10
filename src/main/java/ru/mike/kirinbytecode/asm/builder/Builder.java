@@ -2,6 +2,8 @@ package ru.mike.kirinbytecode.asm.builder;
 
 import ru.mike.kirinbytecode.asm.builder.field.FieldDefinitionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.MethodDefinitionBuilder;
+import ru.mike.kirinbytecode.asm.builder.method.MethodInterceptionBuilder;
+import ru.mike.kirinbytecode.asm.builder.method.MethodInterceptionStagesBuilder;
 import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
 
 import javax.annotation.Nullable;
@@ -9,7 +11,22 @@ import java.lang.reflect.Type;
 
 public interface Builder<T> {
 
-    MethodDefinitionBuilder<T> method(NameMatcher<T> nameMatcher);
+    /**
+     * Выбор метода из родительского класса, который нужно проксировать
+     *
+     * @param nameMatcher матчер, с помощью которого определяется нужный метод
+     * @return {@link MethodInterceptionBuilder <T>} для проксирования метода
+     */
+    MethodInterceptionStagesBuilder<T> method(NameMatcher<T> nameMatcher);
+
+    /**
+     * Описывает создание нового метода, а не проксирование метода родительского класса
+     *
+     * @param name имя метода
+     * @param returnType возвращаемое значение
+     * @param modifiers список модификаторов из {@link org.objectweb.asm.Opcodes}
+     */
+    MethodDefinitionBuilder<T> defineMethod(String name, Class<?> returnType, int modifiers);
 
     /**
      * Описывает поле, которое создастся в прокси классе. Полю можно присвоить значение

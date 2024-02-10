@@ -2,6 +2,7 @@ package ru.mike.kirinbytecode.asm.util;
 
 import org.objectweb.asm.Type;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Objects;
@@ -33,6 +34,25 @@ public class AsmUtil {
         }
 
         return Optional.empty();
+    }
+
+    public static String getMethodDescriptor(Class<?> returnType) {
+        return getMethodDescriptor(returnType, null);
+    }
+
+    public static String getMethodDescriptor(Class<?> returnType, @Nullable Class<?>...parameters) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("(");
+
+        if (Objects.nonNull(parameters)) {
+            for (int i = 0; i < parameters.length; i++) {
+                sb.append(Type.getDescriptor(parameters[i]));
+            }
+        }
+
+        sb.append(")").append(Type.getDescriptor(returnType));
+
+        return sb.toString();
     }
 
     public static int RETURNbyClass(Class<?> clazz) {

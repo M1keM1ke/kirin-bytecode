@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
+import ru.mike.kirinbytecode.asm.generator.FieldGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.DefaultFieldGenerator;
 
 import java.lang.reflect.Type;
@@ -16,8 +17,8 @@ public class FieldDefinition<T> implements Definition {
     private Type type;
     private Integer[] modifiers;
     private Object value;
-    ProxyClassDefinition<T> definition;
-    private DefaultFieldGenerator<T> fieldGenerator;
+    private ProxyClassDefinition<T> definition;
+    private FieldGenerator<T> fieldGenerator;
 
 
     public FieldDefinition(ProxyClassDefinition<T> definition, String name, Type type, Integer[] modifiers) {

@@ -18,7 +18,8 @@ public class CustomValue<T> implements InterceptorImplementation {
     /**
      * Принимает {@link Supplier}, код которого будет встроен между фазами
      * {@link ru.mike.kirinbytecode.asm.definition.BeforeMethodDefinition} и
-     * {@link ru.mike.kirinbytecode.asm.definition.AfterMethodDefinition}.
+     * {@link ru.mike.kirinbytecode.asm.definition.AfterMethodDefinition},
+     * если используется {@link ru.mike.kirinbytecode.asm.builder.SubclassDynamicTypeBuilder#method(NameMatcher)}.
      * Тип возвращаемого значения метода в оригинальном классе должен совпадать с
      * типом {@link T}, иначе возникнет исключение
      *

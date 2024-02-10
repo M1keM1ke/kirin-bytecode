@@ -5,10 +5,10 @@ import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 
 
-public abstract class OriginalReturnTypeMnGenerator {
-    private OriginalReturnTypeMnGenerator next;
+public abstract class AbstractReturnTypeMnGenerator {
+    private AbstractReturnTypeMnGenerator next;
 
-    public OriginalReturnTypeMnGenerator(OriginalReturnTypeMnGenerator next) {
+    protected AbstractReturnTypeMnGenerator(AbstractReturnTypeMnGenerator next) {
         this.next = next;
     }
 
@@ -22,5 +22,5 @@ public abstract class OriginalReturnTypeMnGenerator {
      */
     public abstract <T> MethodNode generate(MethodNode mn, ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition);
 
-    public OriginalReturnTypeMnGenerator getNext() { return this.next; }
+    public AbstractReturnTypeMnGenerator getNext() { return this.next; }
 }

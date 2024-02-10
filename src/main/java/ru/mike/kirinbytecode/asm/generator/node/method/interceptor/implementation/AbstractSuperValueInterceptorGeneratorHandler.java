@@ -1,14 +1,14 @@
-package ru.mike.kirinbytecode.asm.generator.node.method.interceptor.supervalue;
+package ru.mike.kirinbytecode.asm.generator.node.method.interceptor.implementation;
 
 import org.objectweb.asm.tree.MethodNode;
 import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
+import ru.mike.kirinbytecode.asm.definition.InterceptedMethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.InterceptorSuperNodeGeneratorHandler;
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.SuperMethodCallProperties;
 import ru.mike.kirinbytecode.asm.matcher.SuperValue;
 
-import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 import static org.objectweb.asm.Opcodes.ASM9;
@@ -22,20 +22,20 @@ public abstract class AbstractSuperValueInterceptorGeneratorHandler<T> implement
 
     @Override
     public MethodNode generateMethodNode(ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition) {
+        InterceptedMethodDefinition<T> interceptedMethodDefinition = (InterceptedMethodDefinition<T>) methodDefinition;
         InterceptorImplementation implementation = methodDefinition.getImplementation();
-        Method interceptedMethod = methodDefinition.getMethod();
 
-        String interceptedMethodName = interceptedMethod.getName();
-        int modifiers = interceptedMethod.getModifiers();
+        String interceptedMethodName = interceptedMethodDefinition.getName();
+        int modifiers = interceptedMethodDefinition.getModifiers();
 
         checkImplementationTypeOrThrow(SuperValue.class, implementation);
         checkModifiersCorrectOrThrow(definition, interceptedMethodName, modifiers);
-        checkSuperMethodParamsOrThrow(methodDefinition, implementation);
+        checkSuperMethodParamsOrThrow(interceptedMethodDefinition, implementation);
 
         MethodNode mn = new MethodNode(ASM9, modifiers, interceptedMethodName,
                 methodDefinition.getMethodDescriptor(), null, null);
 
-        return generateMethodNode(definition, methodDefinition, mn);
+        return generateMethodNode(definition, interceptedMethodDefinition, mn);
     }
 
     @Override
@@ -55,16 +55,14 @@ public abstract class AbstractSuperValueInterceptorGeneratorHandler<T> implement
 
     private MethodNode generateMethodNode(
             ProxyClassDefinition<T> definition,
-            MethodDefinition<T> methodDefinition,
+            InterceptedMethodDefinition<T> interceptedMethodDefinition,
             MethodNode mn
     ) {
-        Method interceptedMethod = methodDefinition.getMethod();
+        generateBeforeMethodDefinitionCall(definition, interceptedMethodDefinition.getBeforeMethodDefinition(), mn);
+        SuperMethodCallProperties superMethodCallProperties = generateSuperMethodCall(definition, interceptedMethodDefinition, mn);
+        generateAfterMethodDefinitionCall(definition, interceptedMethodDefinition.getAfterMethodDefinition(), mn);
 
-        generateBeforeMethodDefinitionCall(definition, methodDefinition.getBeforeMethodDefinition(), mn);
-        SuperMethodCallProperties superMethodCallProperties = generateSuperMethodCall(definition, methodDefinition, mn);
-        generateAfterMethodDefinitionCall(definition, methodDefinition.getAfterMethodDefinition(), mn);
-
-        Class<?> interceptedMethodReturnType = interceptedMethod.getReturnType();
+        Class<?> interceptedMethodReturnType = interceptedMethodDefinition.getReturnType();
         mn.visitVarInsn(
                 LOADbyClass(interceptedMethodReturnType),
                 superMethodCallProperties.getLastLOADOpcodeNumber()

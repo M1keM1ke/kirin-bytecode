@@ -17,9 +17,9 @@ import static ru.mike.kirinbytecode.asm.util.Constants.Methods.VALUE_OF_NAME;
 import static sun.invoke.util.Wrapper.asPrimitiveType;
 
 @Log4j2
-public class WrapperReturnTypeMnGenerator extends OriginalReturnTypeMnGenerator {
+public class WrapperReturnTypeMnGenerator extends AbstractReturnTypeMnGenerator {
 
-    public WrapperReturnTypeMnGenerator(OriginalReturnTypeMnGenerator next) {
+    public WrapperReturnTypeMnGenerator(AbstractReturnTypeMnGenerator next) {
         super(next);
     }
 
@@ -36,7 +36,7 @@ public class WrapperReturnTypeMnGenerator extends OriginalReturnTypeMnGenerator 
      */
     @Override
     public <T> MethodNode generate(MethodNode mn, ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition) {
-        Class<?> originalReturnType = methodDefinition.getMethod().getReturnType();
+        Class<?> originalReturnType = methodDefinition.getReturnType();
         InterceptorImplementation implementation = methodDefinition.getImplementation();
 
         if (!(implementation instanceof FixedValue)) {

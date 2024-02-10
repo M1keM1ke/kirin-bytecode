@@ -5,13 +5,16 @@ import org.objectweb.asm.tree.ClassNode;
 import ru.mike.kirinbytecode.asm.builder.field.DefaultFieldDefinitionBuilder;
 import ru.mike.kirinbytecode.asm.builder.field.FieldDefinitionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.DefaultMethodDefinitionBuilder;
+import ru.mike.kirinbytecode.asm.builder.method.DefaultMethodInterceptionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.MethodDefinitionBuilder;
+import ru.mike.kirinbytecode.asm.builder.method.MethodInterceptionStagesBuilder;
 import ru.mike.kirinbytecode.asm.definition.FieldDefinition;
 import ru.mike.kirinbytecode.asm.definition.InterceptedMethodsDefinition;
 import ru.mike.kirinbytecode.asm.definition.InterfaceDefinition;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
+import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinedMethodsDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
-import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassMethodsDefinition;
+import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassInterceptedMethodsDefinition;
 import ru.mike.kirinbytecode.asm.exception.notfound.MatcherNotFoundException;
 import ru.mike.kirinbytecode.asm.exception.notfound.MethodNotFoundException;
 import ru.mike.kirinbytecode.asm.generator.name.ConstantProxyClassNameGenerator;
@@ -20,6 +23,8 @@ import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
 import ru.mike.kirinbytecode.asm.matcher.name.NameMatchersUtil;
 import ru.mike.kirinbytecode.asm.util.PathDelimiter;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -37,30 +42,37 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
         generator = new DefaultClassGenerator<>(definition);
 
         definition.setClassGenerator(generator);
-
         definition.setProxyPackageName(definition.getOriginalClazz().getPackage().getName());
     }
 
     @Override
-    public MethodDefinitionBuilder<T> method(NameMatcher<T> nameMatcher) {
+    public MethodInterceptionStagesBuilder<T> method(NameMatcher<T> nameMatcher) {
         Method[] methods = definition.getOriginalClazz().getDeclaredMethods();
 
 //      отобрали методы по фильтру
         List<Method> methodsByMatcher = getMethodsForProxy(nameMatcher, methods);
 
-//      получили класс ProxyClassMethodsDefinition, хранящий все описания прокси методов
-        ProxyClassMethodsDefinition<T> classMethodsDefinition = definition.getProxyClassMethodsDefinition();
+//      получили класс ProxyClassInterceptedMethodsDefinition, хранящий все описания прокси методов
+        ProxyClassInterceptedMethodsDefinition<T> classMethodsDefinition = definition.getProxyClassInterceptedMethodsDefinition();
 
 //      создали InterceptedMethodsDefinition, который хранит мапу методов, собранных по одному фильтру,
 //      и добавили в его мапу список методов выше
-        InterceptedMethodsDefinition<T> interceptedMethodsDefinition = new InterceptedMethodsDefinition<T>(definition);
+        InterceptedMethodsDefinition<T> interceptedMethodsDefinition = new InterceptedMethodsDefinition<>(definition);
         interceptedMethodsDefinition.addProxyMethods(methodsByMatcher);
 
-//      добавили созданный InterceptedMethodsDefinition в список ProxyClassMethodsDefinition
+//      добавили созданный InterceptedMethodsDefinition в список ProxyClassInterceptedMethodsDefinition
         classMethodsDefinition.addInterceptedMethodsDefinition(interceptedMethodsDefinition);
 
-//      вернули новый DefaultMethodDefinitionBuilder, который дополнит описания методов в InterceptedMethodsDefinition
-        return new DefaultMethodDefinitionBuilder<T>(interceptedMethodsDefinition, this);
+//      вернули новый DefaultMethodInterceptionBuilder, который дополнит описания методов в InterceptedMethodsDefinition
+        return new DefaultMethodInterceptionBuilder<>(interceptedMethodsDefinition, this);
+    }
+
+    @Override
+    public MethodDefinitionBuilder<T> defineMethod(String name, Class<?> returnType, int modifiers) {
+        ProxyClassDefinedMethodsDefinition<T> proxyClassDefinedMethodsDefinition = definition.getProxyClassDefinedMethodsDefinition();
+        MethodDefinition<T> methodDefinition = proxyClassDefinedMethodsDefinition.addNewMethod(name, returnType, modifiers);
+
+        return new DefaultMethodDefinitionBuilder<>(definition, methodDefinition, this);
     }
 
     @Override
@@ -73,11 +85,13 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
     @Override
     public UnloadedType<T> make() {
 //      сначала генерируем все независимые от контекста ноды - методы, поля
-        var allMethodsDefinitions = definition.getProxyClassMethodsDefinition().getAllMethodsDefinitions();
+        List<MethodDefinition<T>> interceptedMethodDefinitions = definition.getProxyClassInterceptedMethodsDefinition().getAllMethodsDefinitions();
 
-        for (MethodDefinition<T> methodDefinition : allMethodsDefinitions) {
-            methodDefinition.getMethodGenerator().generateNode();
-        }
+        generateMethods(interceptedMethodDefinitions);
+
+        Map<String, MethodDefinition<T>> definedMethodsDefinitions = definition.getProxyClassDefinedMethodsDefinition().getDefinedMethods();
+
+        generateMethods(definedMethodsDefinitions);
 
         Map<String, FieldDefinition<T>> proxyFields = definition.getProxyClassFieldsDefinition().getProxyFields();
         var allFieldsDefinitions = proxyFields.values();
@@ -92,7 +106,11 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
 
         ClassNode cn = classGenerator.getCn();
 
-        for (MethodDefinition<T> methodDefinition : allMethodsDefinitions) {
+        for (MethodDefinition<T> methodDefinition : interceptedMethodDefinitions) {
+            cn.methods.add(methodDefinition.getMethodGenerator().getMn());
+        }
+
+        for (MethodDefinition<T> methodDefinition : definedMethodsDefinitions.values()) {
             cn.methods.add(methodDefinition.getMethodGenerator().getMn());
         }
 
@@ -110,9 +128,30 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
         cn.accept(cw);
         byte[] bytecode = cw.toByteArray();
 
+
+        try {
+            FileOutputStream fileOutputStream = new FileOutputStream("SSSS.class");
+            fileOutputStream.write(bytecode);
+            fileOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         definition.setBytecodeClazz(bytecode);
 
         return new UnloadedType<>(definition);
+    }
+
+    private void generateMethods(Map<String, MethodDefinition<T>> definedMethodsDefinitions) {
+        for (MethodDefinition<T> methodDefinition : definedMethodsDefinitions.values()) {
+            methodDefinition.getMethodGenerator().generateNode();
+        }
+    }
+
+    private void generateMethods(List<MethodDefinition<T>> interceptedMethodDefinitions) {
+        for (MethodDefinition<T> methodDefinition : interceptedMethodDefinitions) {
+            methodDefinition.getMethodGenerator().generateNode();
+        }
     }
 
     @Override

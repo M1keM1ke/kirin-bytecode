@@ -10,9 +10,9 @@ import ru.mike.kirinbytecode.asm.matcher.FixedValue;
 import static ru.mike.kirinbytecode.asm.util.AsmUtil.RETURNbyClass;
 
 @Log4j2
-public class PrimitiveReturnTypeMnGenerator extends OriginalReturnTypeMnGenerator {
+public class PrimitiveReturnTypeMnGenerator extends AbstractReturnTypeMnGenerator {
 
-    public PrimitiveReturnTypeMnGenerator(OriginalReturnTypeMnGenerator next) {
+    public PrimitiveReturnTypeMnGenerator(AbstractReturnTypeMnGenerator next) {
         super(next);
     }
 
@@ -29,7 +29,7 @@ public class PrimitiveReturnTypeMnGenerator extends OriginalReturnTypeMnGenerato
      */
     @Override
     public <T> MethodNode generate(MethodNode mn, ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition) {
-        Class<?> originalReturnType = methodDefinition.getMethod().getReturnType();
+        Class<?> originalReturnType = methodDefinition.getReturnType();
         InterceptorImplementation implementation = methodDefinition.getImplementation();
 
         if (!(implementation instanceof FixedValue)) {

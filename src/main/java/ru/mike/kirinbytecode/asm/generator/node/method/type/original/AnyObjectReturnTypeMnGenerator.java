@@ -15,9 +15,9 @@ import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.GETFIELD;
 
 @Log4j2
-public class AnyObjectReturnTypeMnGenerator extends OriginalReturnTypeMnGenerator {
+public class AnyObjectReturnTypeMnGenerator extends AbstractReturnTypeMnGenerator {
 
-    public AnyObjectReturnTypeMnGenerator(OriginalReturnTypeMnGenerator next) {
+    public AnyObjectReturnTypeMnGenerator(AbstractReturnTypeMnGenerator next) {
         super(next);
     }
 
@@ -36,7 +36,7 @@ public class AnyObjectReturnTypeMnGenerator extends OriginalReturnTypeMnGenerato
      */
     @Override
     public <T> MethodNode generate(MethodNode mn, ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition) {
-        Class<?> originalReturnType = methodDefinition.getMethod().getReturnType();
+        Class<?> originalReturnType = methodDefinition.getReturnType();
         InterceptorImplementation implementation = methodDefinition.getImplementation();
 
         if (!(implementation instanceof FixedValue)) {

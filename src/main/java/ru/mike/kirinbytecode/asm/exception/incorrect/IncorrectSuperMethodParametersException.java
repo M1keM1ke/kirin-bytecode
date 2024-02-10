@@ -1,6 +1,7 @@
 package ru.mike.kirinbytecode.asm.exception.incorrect;
 
-import java.lang.reflect.Method;
+import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
+
 import java.util.Arrays;
 
 public class IncorrectSuperMethodParametersException extends RuntimeException {
@@ -18,10 +19,10 @@ public class IncorrectSuperMethodParametersException extends RuntimeException {
         throw new IncorrectSuperMethodParametersException(errorMessage);
     }
 
-    public static void throwParamsIsNull(Method interceptedMethod) {
+    public static void throwParamsIsNull(MethodDefinition interceptedMethod) {
         String errorMessage = String.format(
                 "Incorrect parameters for calling super method in proxy method. Expected: %s, got: null",
-                Arrays.toString(interceptedMethod.getParameterTypes())
+                interceptedMethod.getParameterDefinitions()
         );
 
         throw new IncorrectSuperMethodParametersException(errorMessage);

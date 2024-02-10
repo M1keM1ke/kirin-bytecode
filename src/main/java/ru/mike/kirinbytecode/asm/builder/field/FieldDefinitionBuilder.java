@@ -1,12 +1,12 @@
 package ru.mike.kirinbytecode.asm.builder.field;
 
-import ru.mike.kirinbytecode.asm.builder.Builder;
 import ru.mike.kirinbytecode.asm.builder.SubclassDynamicTypeBuilder;
+import ru.mike.kirinbytecode.asm.builder.other.Junction;
 
 import javax.annotation.Nullable;
 import java.lang.reflect.Type;
 
-public interface FieldDefinitionBuilder<T> {
+public interface FieldDefinitionBuilder<T> extends Junction<T> {
 
     /**
      * Присваивает значение полю, созданному в
@@ -19,6 +19,5 @@ public interface FieldDefinitionBuilder<T> {
      */
     FieldDefinitionBuilder<T> value(@Nullable Object value);
 
-    Builder<T> and();
 
 }

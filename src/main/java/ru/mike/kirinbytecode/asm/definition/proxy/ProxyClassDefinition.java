@@ -27,12 +27,14 @@ public class ProxyClassDefinition<T> implements Definition {
     private NameGenerator nameGenerator;
     private byte[] bytecodeClazz;
     private Class<? extends T> generatedClazz;
-    private ProxyClassMethodsDefinition<T> proxyClassMethodsDefinition;
+    private ProxyClassInterceptedMethodsDefinition<T> proxyClassInterceptedMethodsDefinition;
+    private ProxyClassDefinedMethodsDefinition<T> proxyClassDefinedMethodsDefinition;
     private ProxyClassFieldsDefinition<T> proxyClassFieldsDefinition;
     private ProxyClassInterfacesDefinition<T> proxyClassInterfacesDefinition;
 
     public ProxyClassDefinition() {
-        this.proxyClassMethodsDefinition = new ProxyClassMethodsDefinition<>(this);
+        this.proxyClassInterceptedMethodsDefinition = new ProxyClassInterceptedMethodsDefinition<>(this);
+        this.proxyClassDefinedMethodsDefinition = new ProxyClassDefinedMethodsDefinition<>(this);
         this.proxyClassFieldsDefinition = new ProxyClassFieldsDefinition<>(this);
         this.proxyClassInterfacesDefinition = new ProxyClassInterfacesDefinition<>(this);
     }

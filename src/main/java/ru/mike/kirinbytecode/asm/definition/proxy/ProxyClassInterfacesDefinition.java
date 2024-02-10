@@ -19,7 +19,7 @@ public class ProxyClassInterfacesDefinition<T> implements Definition {
     }
 
     public void addProxyInterface(Type type) {
-        InterfaceDefinition<T> interfaceDefinition = new InterfaceDefinition<T>(type);
+        InterfaceDefinition<T> interfaceDefinition = new InterfaceDefinition<>(type);
 
         proxyInterfaces.put(interfaceDefinition.getFullName(), interfaceDefinition);
     }
