@@ -11,10 +11,8 @@ import java.util.Map;
 @Getter
 public class ProxyClassInterfacesDefinition<T> implements Definition {
     private Map<String, InterfaceDefinition<T>> proxyInterfaces;
-    private ProxyClassDefinition<T> definition;
 
-    public ProxyClassInterfacesDefinition(ProxyClassDefinition<T> definition) {
-        this.definition = definition;
+    public ProxyClassInterfacesDefinition() {
         proxyInterfaces = new HashMap<>();
     }
 

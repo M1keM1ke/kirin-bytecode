@@ -58,6 +58,13 @@ public class DefaultMethodDefinitionBuilder<T> implements MethodDefinitionBuilde
     }
 
     @Override
+    public MethodInterceptionBuilder<T> annotateMethod(AnnotationDefinition annotationDefinition) {
+        methodDefinition.getAnnotationDefinitions().add(annotationDefinition);
+
+        return this;
+    }
+
+    @Override
     public Builder<T> and() {
         return subclassDynamicTypeBuilder;
     }

@@ -1,6 +1,7 @@
 package ru.mike.kirinbytecode.asm.builder;
 
 import ru.mike.kirinbytecode.asm.builder.field.FieldDefinitionBuilder;
+import ru.mike.kirinbytecode.asm.builder.method.AnnotationDefinition;
 import ru.mike.kirinbytecode.asm.builder.method.MethodDefinitionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.MethodInterceptionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.MethodInterceptionStagesBuilder;
@@ -59,4 +60,6 @@ public interface Builder<T> {
      * @return {@link Builder<T>}
      */
     Builder<T> name(String name);
+
+    Builder<T> annotateType(AnnotationDefinition annotationDefinition);
 }

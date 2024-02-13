@@ -7,8 +7,8 @@ import ru.mike.kirinbytecode.asm.definition.DefinedMethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.generator.name.FieldNameGenerator;
-import ru.mike.kirinbytecode.asm.generator.node.annotation.DefaultAnnotationGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.NodeGeneratorHandler;
+import ru.mike.kirinbytecode.asm.generator.node.method.annotation.MethodAnnotationGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.parameter.DefaultMethodParameterGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.parameter.MethodParameterGenerator;
 import ru.mike.kirinbytecode.asm.matcher.CustomValue;
@@ -26,11 +26,11 @@ import static ru.mike.kirinbytecode.asm.exception.notfound.InterceptorImplementa
 @AutoService(NodeGeneratorHandler.class)
 public class CustomValueDefinerNodeGeneratorHandler<T> implements NodeGeneratorHandler<T> {
     private MethodParameterGenerator<T> methodParameterGenerator;
-    private DefaultAnnotationGenerator defaultAnnotationGenerator;
+    private MethodAnnotationGenerator methodAnnotationGenerator;
 
     public CustomValueDefinerNodeGeneratorHandler() {
         this.methodParameterGenerator = new DefaultMethodParameterGenerator<>();
-        this.defaultAnnotationGenerator = new DefaultAnnotationGenerator();
+        this.methodAnnotationGenerator = new MethodAnnotationGenerator();
     }
 
     @Override
@@ -44,7 +44,7 @@ public class CustomValueDefinerNodeGeneratorHandler<T> implements NodeGeneratorH
     @Override
     public MethodNode generateMethodNode(ProxyClassDefinition<T> definition, MethodDefinition<T> methodDefinition) {
         DefinedMethodDefinition<T> definedMethodDefinition = (DefinedMethodDefinition<T>) methodDefinition;
-        InterceptorImplementation implementation = methodDefinition.getImplementation();
+        InterceptorImplementation implementation = definedMethodDefinition.getImplementation();
 
         checkImplementationTypeOrThrow(CustomValue.class, implementation);
 
@@ -74,11 +74,12 @@ public class CustomValueDefinerNodeGeneratorHandler<T> implements NodeGeneratorH
                 ACC_PUBLIC
         );
 
-
+//      проставляем аннотации методу
+        methodAnnotationGenerator.visitMethodAnnotations(definedMethodDefinition, mn);
         //      проставляем параметры методу
         methodParameterGenerator.visitMethodParameters(definedMethodDefinition, mn);
 //      для всех параметров проставляем аннотации
-        defaultAnnotationGenerator.visitParametersAnnotations(methodDefinition.getParameterDefinitions(), mn);
+        methodParameterGenerator.visitParametersAnnotations(definedMethodDefinition.getParameterDefinitions(), mn);
 
         return mn;
     }

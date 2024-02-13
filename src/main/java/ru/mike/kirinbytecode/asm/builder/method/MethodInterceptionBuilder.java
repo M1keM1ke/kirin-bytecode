@@ -7,5 +7,7 @@ public interface MethodInterceptionBuilder<T> extends Junction<T> {
 
     MethodInterceptionBuilder<T> intercept(InterceptorImplementation implementation);
 
+    MethodInterceptionBuilder<T> annotateMethod(AnnotationDefinition annotationDefinition);
+
 
 }

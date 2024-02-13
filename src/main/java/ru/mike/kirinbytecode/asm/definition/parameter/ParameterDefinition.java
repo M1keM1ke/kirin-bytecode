@@ -16,7 +16,6 @@ public class ParameterDefinition {
     private String name;
     private Class<?> type;
     private Integer index;
-
     private List<AnnotationDefinition> annotationDefinitions;
 
     @Builder

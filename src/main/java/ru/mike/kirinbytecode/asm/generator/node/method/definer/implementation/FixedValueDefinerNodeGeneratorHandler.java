@@ -6,8 +6,8 @@ import ru.mike.kirinbytecode.asm.builder.InterceptorImplementation;
 import ru.mike.kirinbytecode.asm.definition.DefinedMethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
-import ru.mike.kirinbytecode.asm.generator.node.annotation.DefaultAnnotationGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.NodeGeneratorHandler;
+import ru.mike.kirinbytecode.asm.generator.node.method.annotation.MethodAnnotationGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.parameter.DefaultMethodParameterGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.parameter.MethodParameterGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.type.original.OriginalReturnTypeChainBuilder;
@@ -21,11 +21,11 @@ import static ru.mike.kirinbytecode.asm.exception.notfound.InterceptorImplementa
 @AutoService(NodeGeneratorHandler.class)
 public class FixedValueDefinerNodeGeneratorHandler<T> implements NodeGeneratorHandler<T> {
     private MethodParameterGenerator<T> methodParameterGenerator;
-    private DefaultAnnotationGenerator defaultAnnotationGenerator;
+    private MethodAnnotationGenerator methodAnnotationGenerator;
 
     public FixedValueDefinerNodeGeneratorHandler() {
         this.methodParameterGenerator = new DefaultMethodParameterGenerator<>();
-        this.defaultAnnotationGenerator = new DefaultAnnotationGenerator();
+        this.methodAnnotationGenerator = new MethodAnnotationGenerator();
     }
 
     @Override
@@ -44,10 +44,12 @@ public class FixedValueDefinerNodeGeneratorHandler<T> implements NodeGeneratorHa
 
         MethodNode mn = new MethodNode(ASM9, definedMethodDefinition.getModifiers(), definedMethodDefinition.getName(), definedMethodDefinition.getMethodDescriptor(), null, null);
 
+//      проставляем аннотации методу
+        methodAnnotationGenerator.visitMethodAnnotations(definedMethodDefinition, mn);
 //      проставляем параметры методу
         methodParameterGenerator.visitMethodParameters(definedMethodDefinition, mn);
 //      для всех параметров проставляем аннотации
-        defaultAnnotationGenerator.visitParametersAnnotations(methodDefinition.getParameterDefinitions(), mn);
+        methodParameterGenerator.visitParametersAnnotations(definedMethodDefinition.getParameterDefinitions(), mn);
 
 //      определяем тип возвращаемого значения проксируемого метода и в зависимости от него генерируем прокси метод
         OriginalReturnTypeChainBuilder.buildChain().generate(mn, definition, definedMethodDefinition);

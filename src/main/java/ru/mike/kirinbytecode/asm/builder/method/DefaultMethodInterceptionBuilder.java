@@ -9,6 +9,8 @@ import ru.mike.kirinbytecode.asm.definition.InterceptedMethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.InterceptedMethodsDefinition;
 import ru.mike.kirinbytecode.asm.generator.name.FieldNameGenerator;
 
+import java.util.List;
+
 public class DefaultMethodInterceptionBuilder<T> implements MethodInterceptionStagesBuilder<T> {
     private InterceptedMethodsDefinition<T> interceptedMethodsDefinition;
     private SubclassDynamicTypeBuilder<T> subclassDynamicTypeBuilder;
@@ -25,6 +27,17 @@ public class DefaultMethodInterceptionBuilder<T> implements MethodInterceptionSt
         for (InterceptedMethodDefinition<T> methodDefinition : interceptedMethodsDefinition.getProxyMethods()) {
             methodDefinition.setImplementation(implementation);
             methodDefinition.getMethodGenerator().setMethodDefinition(methodDefinition);
+        }
+
+        return this;
+    }
+
+    @Override
+    public MethodInterceptionBuilder<T> annotateMethod(AnnotationDefinition annotationDefinition) {
+        List<InterceptedMethodDefinition<T>> proxyMethods = interceptedMethodsDefinition.getProxyMethods();
+
+        for (InterceptedMethodDefinition<T> methodDefinition : proxyMethods) {
+            methodDefinition.getAnnotationDefinitions().add(annotationDefinition);
         }
 
         return this;

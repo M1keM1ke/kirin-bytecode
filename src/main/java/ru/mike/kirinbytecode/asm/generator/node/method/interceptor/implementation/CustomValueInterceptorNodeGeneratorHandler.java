@@ -8,6 +8,7 @@ import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.generator.name.FieldNameGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.NodeGeneratorHandler;
+import ru.mike.kirinbytecode.asm.generator.node.method.annotation.MethodAnnotationGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.StagesNodeGeneratorHandler;
 import ru.mike.kirinbytecode.asm.matcher.CustomValue;
 
@@ -28,6 +29,12 @@ import static sun.invoke.util.Wrapper.asPrimitiveType;
 
 @AutoService(NodeGeneratorHandler.class)
 public class CustomValueInterceptorNodeGeneratorHandler<T> implements StagesNodeGeneratorHandler<T> {
+    private MethodAnnotationGenerator methodAnnotationGenerator;
+
+    public CustomValueInterceptorNodeGeneratorHandler() {
+        this.methodAnnotationGenerator = new MethodAnnotationGenerator();
+    }
+
     @Override
     public boolean isSuitableHandler(MethodDefinition<T> methodDefinition) {
         InterceptorImplementation implementation = methodDefinition.getImplementation();
@@ -85,6 +92,9 @@ public class CustomValueInterceptorNodeGeneratorHandler<T> implements StagesNode
                 Supplier.class,
                 ACC_PUBLIC
         );
+
+//      проставляем аннотации методу
+        methodAnnotationGenerator.visitMethodAnnotations(interceptedMethodDefinition, mn);
 
         return mn;
     }

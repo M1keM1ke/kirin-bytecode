@@ -27,25 +27,4 @@ public class MainAnnotationAnnotationParameterTypeProcessor implements Annotatio
                 agc.getName()
         );
     }
-
-//    @Override
-//    public void process(AnnotationVisitor annotationVisitor, String methodName, Object value) {
-////        AnnotationVisitor annoAnnoVisitor = annotationVisitor.visitAnnotation(methodName, Type.getDescriptor(getAnnoClassOrThrow(returnType)));
-////
-////        visitAnnotation(annoAnnoVisitor, value);
-//    }
-
-//    @Override
-//    @SneakyThrows
-//    public void process(AnnotationVisitor annotationVisitor, Object value, Method annotationMethod) {
-//        Class<?> returnType = annotationMethod.getReturnType();
-//
-//
-//        AnnotationVisitor annoAnnoVisitor = annotationVisitor.visitAnnotation(annotationMethod.getName(), Type.getDescriptor(returnType));
-//        Object returnValue = annotationMethod.invoke(value);
-//
-//        new DefaultAnnotationGenerator().visitAnnotation(annoAnnoVisitor, returnValue);
-//    }
-
-
 }

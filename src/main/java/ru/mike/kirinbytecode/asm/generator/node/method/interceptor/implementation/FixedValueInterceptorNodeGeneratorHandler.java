@@ -9,6 +9,7 @@ import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.exception.ReturnTypeCastException;
 import ru.mike.kirinbytecode.asm.generator.node.method.NodeGeneratorHandler;
+import ru.mike.kirinbytecode.asm.generator.node.method.annotation.MethodAnnotationGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.method.interceptor.StagesNodeGeneratorHandler;
 import ru.mike.kirinbytecode.asm.generator.node.method.type.original.OriginalReturnTypeChainBuilder;
 import ru.mike.kirinbytecode.asm.matcher.FixedValue;
@@ -26,6 +27,11 @@ import static sun.invoke.util.Wrapper.asPrimitiveType;
 @Log4j2
 @AutoService(NodeGeneratorHandler.class)
 public class FixedValueInterceptorNodeGeneratorHandler<T> implements StagesNodeGeneratorHandler<T> {
+    private MethodAnnotationGenerator methodAnnotationGenerator;
+
+    public FixedValueInterceptorNodeGeneratorHandler() {
+        this.methodAnnotationGenerator = new MethodAnnotationGenerator();
+    }
 
     @Override
     public boolean isSuitableHandler(MethodDefinition<T> methodDefinition) {
@@ -72,6 +78,9 @@ public class FixedValueInterceptorNodeGeneratorHandler<T> implements StagesNodeG
 
 //      определяем тип возвращаемого значения проксируемого метода и в зависимости от него генерируем прокси метод
         OriginalReturnTypeChainBuilder.buildChain().generate(mn, definition, interceptedMethodDefinition);
+
+//      проставляем аннотации методу
+        methodAnnotationGenerator.visitMethodAnnotations(interceptedMethodDefinition, mn);
 
         return mn;
     }

@@ -26,6 +26,7 @@ public class DefaultClassGenerator<T> implements Generator, Opcodes {
     public void generateNode() {
         Class<T> clazz = definition.getOriginalClazz();
         String className = definition.getNameGenerator().getGeneratedName(clazz.getSimpleName());
+        definition.setGeneratedProxyClassName(className);
 
         fillClassNode(clazz, className);
     }

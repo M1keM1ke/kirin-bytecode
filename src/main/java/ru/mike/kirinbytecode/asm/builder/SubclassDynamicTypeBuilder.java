@@ -1,17 +1,21 @@
 package ru.mike.kirinbytecode.asm.builder;
 
+import lombok.extern.slf4j.Slf4j;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
 import ru.mike.kirinbytecode.asm.builder.field.DefaultFieldDefinitionBuilder;
 import ru.mike.kirinbytecode.asm.builder.field.FieldDefinitionBuilder;
+import ru.mike.kirinbytecode.asm.builder.method.AnnotationDefinition;
 import ru.mike.kirinbytecode.asm.builder.method.DefaultMethodDefinitionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.DefaultMethodInterceptionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.MethodDefinitionBuilder;
 import ru.mike.kirinbytecode.asm.builder.method.MethodInterceptionStagesBuilder;
 import ru.mike.kirinbytecode.asm.definition.FieldDefinition;
+import ru.mike.kirinbytecode.asm.definition.InterceptedMethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.InterceptedMethodsDefinition;
 import ru.mike.kirinbytecode.asm.definition.InterfaceDefinition;
 import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
+import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassAnnotationsDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinedMethodsDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassInterceptedMethodsDefinition;
@@ -19,20 +23,20 @@ import ru.mike.kirinbytecode.asm.exception.notfound.MatcherNotFoundException;
 import ru.mike.kirinbytecode.asm.exception.notfound.MethodNotFoundException;
 import ru.mike.kirinbytecode.asm.generator.name.ConstantProxyClassNameGenerator;
 import ru.mike.kirinbytecode.asm.generator.node.DefaultClassGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.node.AnnotationNodeContext;
 import ru.mike.kirinbytecode.asm.matcher.NameMatcher;
 import ru.mike.kirinbytecode.asm.matcher.name.NameMatchersUtil;
 import ru.mike.kirinbytecode.asm.util.PathDelimiter;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
 import static org.objectweb.asm.ClassWriter.COMPUTE_FRAMES;
 
+@Slf4j
 public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
     private DefaultClassGenerator<T> generator;
     private ProxyClassDefinition<T> definition;
@@ -51,6 +55,15 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
 
 //      отобрали методы по фильтру
         List<Method> methodsByMatcher = getMethodsForProxy(nameMatcher, methods);
+
+//      если разными двумя матчерами выберется один и тот же метод, то к нему могут продублироваться настройки
+//      или если матчером выберется несколько методов, то к ним применятся все последующие настройки одновременно
+        if (methodsByMatcher.size() > 1) {
+            log.warn("Found {} methods by matcher:{}. " +
+                    "This may produce some errors like duplication annotations for the same method",
+                    methodsByMatcher.size(), nameMatcher
+            );
+        }
 
 //      получили класс ProxyClassInterceptedMethodsDefinition, хранящий все описания прокси методов
         ProxyClassInterceptedMethodsDefinition<T> classMethodsDefinition = definition.getProxyClassInterceptedMethodsDefinition();
@@ -85,72 +98,50 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
     @Override
     public UnloadedType<T> make() {
 //      сначала генерируем все независимые от контекста ноды - методы, поля
-        List<MethodDefinition<T>> interceptedMethodDefinitions = definition.getProxyClassInterceptedMethodsDefinition().getAllMethodsDefinitions();
-
-        generateMethods(interceptedMethodDefinitions);
-
-        Map<String, MethodDefinition<T>> definedMethodsDefinitions = definition.getProxyClassDefinedMethodsDefinition().getDefinedMethods();
-
-        generateMethods(definedMethodsDefinitions);
-
-        Map<String, FieldDefinition<T>> proxyFields = definition.getProxyClassFieldsDefinition().getProxyFields();
-        var allFieldsDefinitions = proxyFields.values();
-
-        for (FieldDefinition<T> fieldDefinition : allFieldsDefinitions) {
-            fieldDefinition.getFieldGenerator().generateNode();
-        }
+        generateInterceptedMethods(definition);
+        generateDefinedMethods(definition);
+        generateFields(definition);
 
 //        дальше генерируем ClassNode и все ноды собираем в ClassNode
-        DefaultClassGenerator<T> classGenerator = definition.getClassGenerator();
-        classGenerator.generateNode();
+        generateClassNode(definition);
+        generateClassNodeAnnotations(definition);
 
-        ClassNode cn = classGenerator.getCn();
+        addInterceptedMethodsToClassNode(definition);
+        addDefinedMethodsToClassNode(definition);
+        addFieldsToClassNode(definition);
+        addInterfacesToClassNode(definition);
 
-        for (MethodDefinition<T> methodDefinition : interceptedMethodDefinitions) {
-            cn.methods.add(methodDefinition.getMethodGenerator().getMn());
-        }
-
-        for (MethodDefinition<T> methodDefinition : definedMethodsDefinitions.values()) {
-            cn.methods.add(methodDefinition.getMethodGenerator().getMn());
-        }
-
-        for (FieldDefinition<T> fieldDefinition : allFieldsDefinitions) {
-            cn.fields.add(fieldDefinition.getFieldGenerator().getFn());
-        }
-
-        var allInterfacesDefinitions = definition.getProxyClassInterfacesDefinition().getProxyInterfaces().values();
-
-        for (InterfaceDefinition<T> interfaceDefinition : allInterfacesDefinitions) {
-            cn.interfaces.add(interfaceDefinition.getFullName(PathDelimiter.RIGHT_SLASH));
-        }
-
+        ClassNode cn = definition.getClassGenerator().getCn();
         ClassWriter cw = new ClassWriter(COMPUTE_FRAMES);
         cn.accept(cw);
         byte[] bytecode = cw.toByteArray();
-
-
-        try {
-            FileOutputStream fileOutputStream = new FileOutputStream("SSSS.class");
-            fileOutputStream.write(bytecode);
-            fileOutputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         definition.setBytecodeClazz(bytecode);
 
         return new UnloadedType<>(definition);
     }
 
-    private void generateMethods(Map<String, MethodDefinition<T>> definedMethodsDefinitions) {
-        for (MethodDefinition<T> methodDefinition : definedMethodsDefinitions.values()) {
-            methodDefinition.getMethodGenerator().generateNode();
-        }
-    }
+    private void generateClassNodeAnnotations(ProxyClassDefinition<T> definition) {
+        ClassNode cn = definition.getClassGenerator().getCn();
 
-    private void generateMethods(List<MethodDefinition<T>> interceptedMethodDefinitions) {
-        for (MethodDefinition<T> methodDefinition : interceptedMethodDefinitions) {
-            methodDefinition.getMethodGenerator().generateNode();
+        ProxyClassAnnotationsDefinition<T> proxyClassAnnotationsDefinition = definition
+                .getProxyClassAnnotationsDefinition();
+        Collection<AnnotationDefinition> annotationDefinitions = proxyClassAnnotationsDefinition
+                .getAnnotationDefinitions()
+                .values();
+
+        for (AnnotationDefinition annotationDefinition : annotationDefinitions) {
+            proxyClassAnnotationsDefinition.getAnnotationNodeGenerator().visitNodeAnnotation(
+                    AnnotationNodeContext.builder()
+                            .annotationClassNodeContext(
+                                    AnnotationNodeContext.AnnotationClassNodeContext.builder()
+                                            .classNode(cn)
+                                            .build()
+                            )
+                            .build(),
+                    annotationDefinition
+
+            );
         }
     }
 
@@ -164,6 +155,106 @@ public class SubclassDynamicTypeBuilder<T> implements Builder<T> {
     public Builder<T> name(String name) {
         definition.setNameGeneratorIfNeeded(new ConstantProxyClassNameGenerator(name));
         return this;
+    }
+
+    @Override
+    public Builder<T> annotateType(AnnotationDefinition annotationDefinition) {
+        definition.getProxyClassAnnotationsDefinition().addAnnotation(annotationDefinition);
+        return this;
+    }
+
+    private void generateClassNode(ProxyClassDefinition<T> definition) {
+        DefaultClassGenerator<T> classGenerator = definition.getClassGenerator();
+        classGenerator.generateNode();
+    }
+
+    private void generateFields(ProxyClassDefinition<T> definition) {
+        Collection<FieldDefinition<T>> fieldsDefinitions = definition
+                .getProxyClassFieldsDefinition()
+                .getProxyFields()
+                .values();
+
+        generateFields(fieldsDefinitions);
+    }
+
+    private void generateDefinedMethods(ProxyClassDefinition<T> definition) {
+        Collection<MethodDefinition<T>> definedMethodsDefinitions = definition
+                .getProxyClassDefinedMethodsDefinition()
+                .getDefinedMethods()
+                .values();
+
+        generateMethods(definedMethodsDefinitions);
+    }
+
+    private void generateInterceptedMethods(ProxyClassDefinition<T> definition) {
+        List<InterceptedMethodDefinition<T>> interceptedMethodDefinitions = definition
+                .getProxyClassInterceptedMethodsDefinition()
+                .getAllMethodsDefinitions();
+
+        generateMethods(interceptedMethodDefinitions);
+    }
+
+    private void addInterfacesToClassNode(ProxyClassDefinition<T> definition) {
+        ClassNode cn = definition.getClassGenerator().getCn();
+
+        var interfacesDefinitions = definition
+                .getProxyClassInterfacesDefinition()
+                .getProxyInterfaces()
+                .values();
+
+        for (InterfaceDefinition<T> interfaceDefinition : interfacesDefinitions) {
+            cn.interfaces.add(interfaceDefinition.getFullName(PathDelimiter.RIGHT_SLASH));
+        }
+    }
+
+    private void addFieldsToClassNode(ProxyClassDefinition<T> definition) {
+        ClassNode cn = definition.getClassGenerator().getCn();
+
+        Collection<FieldDefinition<T>> fieldsDefinitions = definition
+                .getProxyClassFieldsDefinition()
+                .getProxyFields()
+                .values();
+
+        for (FieldDefinition<T> fieldDefinition : fieldsDefinitions) {
+            cn.fields.add(fieldDefinition.getFieldGenerator().getFn());
+        }
+    }
+
+    private void addInterceptedMethodsToClassNode(ProxyClassDefinition<T> definition) {
+        List<InterceptedMethodDefinition<T>> interceptedMethodDefinitions = definition
+                .getProxyClassInterceptedMethodsDefinition()
+                .getAllMethodsDefinitions();
+
+        addMethodsToClassNode(definition, interceptedMethodDefinitions);
+    }
+
+    private void addDefinedMethodsToClassNode(ProxyClassDefinition<T> definition) {
+        Collection<MethodDefinition<T>> definedMethodsDefinitions = definition
+                .getProxyClassDefinedMethodsDefinition()
+                .getDefinedMethods()
+                .values();
+
+        addMethodsToClassNode(definition, definedMethodsDefinitions);
+    }
+
+    private void addMethodsToClassNode(ProxyClassDefinition<T> definition, Collection<? extends MethodDefinition<T>> methodDefinitions) {
+        ClassNode cn = definition.getClassGenerator().getCn();
+
+        for (MethodDefinition<T> methodDefinition : methodDefinitions) {
+            cn.methods.add(methodDefinition.getMethodGenerator().getMn());
+        }
+    }
+
+    private void generateFields(Collection<FieldDefinition<T>> allFieldsDefinitions) {
+        for (FieldDefinition<T> fieldDefinition : allFieldsDefinitions) {
+            fieldDefinition.getFieldGenerator().generateNode();
+        }
+    }
+
+    private void generateMethods(Collection<? extends MethodDefinition<T>> interceptedMethodDefinitions) {
+        for (MethodDefinition<T> methodDefinition : interceptedMethodDefinitions) {
+            methodDefinition.getMethodGenerator().generateNode();
+        }
     }
 
     private List<Method> getMethodsForProxy(NameMatcher<T> nameMatcher, Method[] methods) {

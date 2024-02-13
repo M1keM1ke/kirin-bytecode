@@ -5,7 +5,13 @@ import lombok.Getter;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.load.DefaultClassLoader;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 public class UnloadedType<T> {
+    public static final String DEFAULT_FOLDER = "kirin-output";
+
     private ProxyClassDefinition<T> definition;
     @Getter
     byte[] bytecodeClazz;
@@ -13,6 +19,26 @@ public class UnloadedType<T> {
     public UnloadedType(ProxyClassDefinition<T> definition) {
         this.definition = definition;
         this.bytecodeClazz = definition.getBytecodeClazz();
+    }
+
+    public UnloadedType<T> saveToFile() {
+        new File(DEFAULT_FOLDER).mkdir();
+        saveToFile(DEFAULT_FOLDER);
+
+        return this;
+    }
+
+    public UnloadedType<T> saveToFile(String path) {
+        File file = new File(path + "/" + definition.getGeneratedProxyClassName() + ".class");
+
+        try(FileOutputStream fileOutputStream = new FileOutputStream(file)) {
+            fileOutputStream.write(this.bytecodeClazz);
+            fileOutputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return this;
     }
 
     @SuppressWarnings({"unchecked"})

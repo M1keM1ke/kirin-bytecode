@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;
 import org.objectweb.asm.AnnotationVisitor;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.type.AnnotationTypeGenerator;
 
 import javax.annotation.Nullable;
 
@@ -23,5 +24,5 @@ public class AnnotationGenerationContext {
     @Nullable
     private String descriptor;
 
-    private AnnotationGenerator annotationGenerator;
+    private AnnotationTypeGenerator annotationGenerator;
 }

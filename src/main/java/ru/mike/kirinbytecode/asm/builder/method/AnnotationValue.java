@@ -1,17 +1,17 @@
 package ru.mike.kirinbytecode.asm.builder.method;
 
-import ru.mike.kirinbytecode.asm.generator.node.annotation.AnnotationAnnotationGenerator;
-import ru.mike.kirinbytecode.asm.generator.node.annotation.AnnotationGenerator;
-import ru.mike.kirinbytecode.asm.generator.node.annotation.ArrayAnnotationGenerator;
-import ru.mike.kirinbytecode.asm.generator.node.annotation.ClassAnnotationGenerator;
-import ru.mike.kirinbytecode.asm.generator.node.annotation.EnumAnnotationGenerator;
-import ru.mike.kirinbytecode.asm.generator.node.annotation.OtherAnnotationGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.type.AnnotationAnnotationTypeGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.type.AnnotationTypeGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.type.ArrayAnnotationTypeGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.type.ClassAnnotationTypeGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.type.EnumAnnotationTypeGenerator;
+import ru.mike.kirinbytecode.asm.generator.node.annotation.type.OtherAnnotationTypeGenerator;
 
 public interface AnnotationValue<V> {
 
     V getValue();
 
-    AnnotationGenerator getAnnotationGenerator();
+    AnnotationTypeGenerator getAnnotationGenerator();
 
     abstract class AbstractAnnotationValue<V> implements AnnotationValue<V> {
         protected V value;
@@ -22,11 +22,11 @@ public interface AnnotationValue<V> {
     }
 
     class MainAnnotationAnnotationValue<V> extends AbstractAnnotationValue<V> {
-        private AnnotationGenerator annotationGenerator;
+        private AnnotationTypeGenerator annotationGenerator;
 
         protected MainAnnotationAnnotationValue(V value) {
             super(value);
-            this.annotationGenerator = new AnnotationAnnotationGenerator();
+            this.annotationGenerator = new AnnotationAnnotationTypeGenerator();
         }
 
         @Override
@@ -35,17 +35,17 @@ public interface AnnotationValue<V> {
         }
 
         @Override
-        public AnnotationGenerator getAnnotationGenerator() {
+        public AnnotationTypeGenerator getAnnotationGenerator() {
             return annotationGenerator;
         }
     }
 
     class OtherAnnotationAnnotationValue<V> extends AbstractAnnotationValue<V> {
-        private AnnotationGenerator annotationGenerator;
+        private AnnotationTypeGenerator annotationGenerator;
 
         protected OtherAnnotationAnnotationValue(V value) {
             super(value);
-            this.annotationGenerator = new OtherAnnotationGenerator();
+            this.annotationGenerator = new OtherAnnotationTypeGenerator();
         }
 
         @Override
@@ -54,17 +54,17 @@ public interface AnnotationValue<V> {
         }
 
         @Override
-        public AnnotationGenerator getAnnotationGenerator() {
+        public AnnotationTypeGenerator getAnnotationGenerator() {
             return annotationGenerator;
         }
     }
 
     class ArrayAnnotationValue<V> extends AbstractAnnotationValue<V> {
-        private AnnotationGenerator annotationGenerator;
+        private AnnotationTypeGenerator annotationGenerator;
 
         protected ArrayAnnotationValue(V value) {
             super(value);
-            this.annotationGenerator = new ArrayAnnotationGenerator();
+            this.annotationGenerator = new ArrayAnnotationTypeGenerator();
         }
 
         @Override
@@ -73,17 +73,17 @@ public interface AnnotationValue<V> {
         }
 
         @Override
-        public AnnotationGenerator getAnnotationGenerator() {
+        public AnnotationTypeGenerator getAnnotationGenerator() {
             return annotationGenerator;
         }
     }
 
     class EnumAnnotationAnnotationValue<V> extends AbstractAnnotationValue<V> {
-        private AnnotationGenerator annotationGenerator;
+        private AnnotationTypeGenerator annotationGenerator;
 
         protected EnumAnnotationAnnotationValue(V value) {
             super(value);
-            this.annotationGenerator = new EnumAnnotationGenerator();
+            this.annotationGenerator = new EnumAnnotationTypeGenerator();
         }
 
         @Override
@@ -92,17 +92,17 @@ public interface AnnotationValue<V> {
         }
 
         @Override
-        public AnnotationGenerator getAnnotationGenerator() {
+        public AnnotationTypeGenerator getAnnotationGenerator() {
             return annotationGenerator;
         }
     }
 
     class ClassAnnotationAnnotationValue<V> extends AbstractAnnotationValue<V> {
-        private AnnotationGenerator annotationGenerator;
+        private AnnotationTypeGenerator annotationGenerator;
 
         protected ClassAnnotationAnnotationValue(V value) {
             super(value);
-            this.annotationGenerator = new ClassAnnotationGenerator();
+            this.annotationGenerator = new ClassAnnotationTypeGenerator();
         }
 
         @Override
@@ -111,7 +111,7 @@ public interface AnnotationValue<V> {
         }
 
         @Override
-        public AnnotationGenerator getAnnotationGenerator() {
+        public AnnotationTypeGenerator getAnnotationGenerator() {
             return annotationGenerator;
         }
     }
