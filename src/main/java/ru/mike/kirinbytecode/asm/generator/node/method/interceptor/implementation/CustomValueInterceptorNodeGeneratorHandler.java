@@ -17,15 +17,15 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import static jdk.dynalink.linker.support.TypeUtilities.isWrapperType;
-import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ARETURN;
-import static org.objectweb.asm.Opcodes.ASM9;
+import static org.objectweb.asm.Opcodes.*;
 import static ru.mike.kirinbytecode.asm.exception.incorrect.IncorrectModifierException.throwIncorrectFinal;
 import static ru.mike.kirinbytecode.asm.exception.incorrect.IncorrectModifierException.throwIncorrectPrivate;
 import static ru.mike.kirinbytecode.asm.exception.notfound.InterceptorImplementationNotFoundException.checkImplementationTypeOrThrow;
+import static ru.mike.kirinbytecode.asm.util.AsmUtil.RETURNbyClass;
+import static ru.mike.kirinbytecode.asm.util.AsmUtil.invokeVirtualWrapperValue;
 import static ru.mike.kirinbytecode.asm.util.BytecodeGenHelper.generateSupplierCall;
 import static sun.invoke.util.Wrapper.asPrimitiveType;
+import static sun.invoke.util.Wrapper.isPrimitiveType;
 
 @AutoService(NodeGeneratorHandler.class)
 public class CustomValueInterceptorNodeGeneratorHandler<T> implements StagesNodeGeneratorHandler<T> {
@@ -58,16 +58,11 @@ public class CustomValueInterceptorNodeGeneratorHandler<T> implements StagesNode
         Class<?> suppGenericType = customValue.getReturnType();
         Class<?> originalReturnType = interceptedMethodDefinition.getReturnType();
 
-//      если возвращаемый тип в оригинальном методе класса - примитивный тип, а тип значения для
-//      прокси метода - обертка, то необходимо скастить обертку к примитиву, иначе будет ReturnTypeCastException
-        if (originalReturnType.isPrimitive() && isWrapperType(suppGenericType)) {
-            suppGenericType = asPrimitiveType(suppGenericType);
-        }
-
-        if (!originalReturnType.isAssignableFrom(suppGenericType)) {
+        if (!originalReturnType.isAssignableFrom(suppGenericType) &&
+                !(originalReturnType.isPrimitive() && isWrapperType(suppGenericType))) {
             throw new RuntimeException();
         }
-
+        
         checkModifiersCorrectOrThrow(definition, interceptedMethodName, modifiers);
 
 
@@ -78,11 +73,17 @@ public class CustomValueInterceptorNodeGeneratorHandler<T> implements StagesNode
 
         String fieldGeneratedName = new FieldNameGenerator().getGeneratedName(null);
 
-        generateSupplierCall(definition, mn, fieldGeneratedName);
+        generateSupplierCall(definition, mn, fieldGeneratedName, suppGenericType);
         generateAfterMethodDefinitionCall(definition, interceptedMethodDefinition.getAfterMethodDefinition(), mn);
 
         mn.visitVarInsn(ALOAD, 3);
-        mn.visitInsn(ARETURN);
+
+//      если возвращаемый тип в оригинальном методе - примитив, то нужно вызвать value метод обертки
+        if (isPrimitiveType(originalReturnType)) {
+            invokeVirtualWrapperValue(mn, suppGenericType);
+        }
+
+        mn.visitInsn(RETURNbyClass(asPrimitiveType(suppGenericType)));
 
 //      создаем и добавляем FieldDefinition в мапу, чтобы в LoadedType.fillEmptyFields()
 //      заполнить сгенерированное поле

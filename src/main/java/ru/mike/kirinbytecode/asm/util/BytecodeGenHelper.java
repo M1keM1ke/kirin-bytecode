@@ -3,15 +3,11 @@ package ru.mike.kirinbytecode.asm.util;
 import org.objectweb.asm.tree.MethodNode;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ASTORE;
-import static org.objectweb.asm.Opcodes.CHECKCAST;
-import static org.objectweb.asm.Opcodes.GETFIELD;
-import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
+import static org.objectweb.asm.Opcodes.*;
 
 public class BytecodeGenHelper {
 
-    public static void generateSupplierCall(ProxyClassDefinition definition, MethodNode mn, String fieldGeneratedName) {
+    public static void generateSupplierCall(ProxyClassDefinition definition, MethodNode mn, String fieldGeneratedName, Class<?> suppGenericType) {
         mn.visitVarInsn(ALOAD, 0);
         mn.visitFieldInsn(
                 GETFIELD,
@@ -25,7 +21,7 @@ public class BytecodeGenHelper {
                 "()Ljava/lang/Object;",
                 true
         );
-        mn.visitTypeInsn(CHECKCAST, "java/lang/String");
+        mn.visitTypeInsn(CHECKCAST, suppGenericType.getName().replaceAll("\\.", "/"));
         mn.visitVarInsn(ASTORE, 3);
     }
 }

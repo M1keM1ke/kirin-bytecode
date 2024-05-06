@@ -7,8 +7,6 @@ import ru.mike.kirinbytecode.asm.definition.MethodDefinition;
 import ru.mike.kirinbytecode.asm.definition.proxy.ProxyClassDefinition;
 import ru.mike.kirinbytecode.asm.matcher.FixedValue;
 
-import java.util.Optional;
-
 import static jdk.dynalink.linker.support.TypeUtilities.isWrapperType;
 import static org.objectweb.asm.Opcodes.ARETURN;
 import static org.objectweb.asm.Opcodes.INVOKESTATIC;
@@ -48,11 +46,11 @@ public class WrapperReturnTypeMnGenerator extends AbstractReturnTypeMnGenerator 
 
         if (isWrapperType(originalReturnType)) {
             mn.visitLdcInsn(interceptedReturnValue);
-            Optional<String> valueOfMethodDescOpt = getMethodDescriptor(
-                    originalReturnType, VALUE_OF_NAME, new Class[] {asPrimitiveType(originalReturnType)}
+            String valueOfMethodDesc = getMethodDescriptor(
+                    originalReturnType, VALUE_OF_NAME, asPrimitiveType(originalReturnType)
             );
 
-            if (valueOfMethodDescOpt.isEmpty()) {
+            if (valueOfMethodDesc.isEmpty()) {
                 throw new RuntimeException("Unable to get method descriptor of 'valueOf' method in class:" + originalReturnType);
             }
 
@@ -60,7 +58,7 @@ public class WrapperReturnTypeMnGenerator extends AbstractReturnTypeMnGenerator 
                     INVOKESTATIC,
                     originalReturnType.getName().replaceAll("\\.", "/"),
                     VALUE_OF_NAME,
-                    valueOfMethodDescOpt.get(),
+                    valueOfMethodDesc,
                     false
             );
 

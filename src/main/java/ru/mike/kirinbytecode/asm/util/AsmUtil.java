@@ -1,40 +1,17 @@
 package ru.mike.kirinbytecode.asm.util;
 
+import lombok.SneakyThrows;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.objectweb.asm.tree.MethodNode;
 
 import javax.annotation.Nullable;
-import java.lang.reflect.Method;
-import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.ARETURN;
-import static org.objectweb.asm.Opcodes.ASTORE;
-import static org.objectweb.asm.Opcodes.DLOAD;
-import static org.objectweb.asm.Opcodes.DRETURN;
-import static org.objectweb.asm.Opcodes.DSTORE;
-import static org.objectweb.asm.Opcodes.FLOAD;
-import static org.objectweb.asm.Opcodes.FRETURN;
-import static org.objectweb.asm.Opcodes.FSTORE;
-import static org.objectweb.asm.Opcodes.ILOAD;
-import static org.objectweb.asm.Opcodes.IRETURN;
-import static org.objectweb.asm.Opcodes.ISTORE;
-import static org.objectweb.asm.Opcodes.LLOAD;
-import static org.objectweb.asm.Opcodes.LRETURN;
-import static org.objectweb.asm.Opcodes.LSTORE;
+import static jdk.dynalink.linker.support.TypeUtilities.isWrapperType;
+import static org.objectweb.asm.Opcodes.*;
 
 public class AsmUtil {
-
-    public static Optional<String> getMethodDescriptor(Class<?> clazz, String methodName, Class<?>[] parametersTypes) {
-        for (Method method : clazz.getDeclaredMethods()) {
-            if (Objects.equals(methodName, method.getName()) && Arrays.deepEquals(parametersTypes, method.getParameterTypes())) {
-                return Optional.of(Type.getMethodDescriptor(method));
-            }
-        }
-
-        return Optional.empty();
-    }
 
     public static String getMethodDescriptor(Class<?> returnType) {
         return getMethodDescriptor(returnType, null);
@@ -65,6 +42,58 @@ public class AsmUtil {
 
     public static int STOREbyClass(Class<?> clazz) {
         return opcodeByClass(clazz, ISTORE, FSTORE, DSTORE, LSTORE, ASTORE);
+    }
+
+    public static void invokeVirtualWrapperValue(MethodNode mn, Class<?> wrapperClazz) {
+        if (!isWrapperType(wrapperClazz)) {
+            throw new RuntimeException(wrapperClazz + " is not wrapper type!");
+        }
+
+        String methodName = getWrapperValueMethodName(wrapperClazz);
+        mn.visitMethodInsn(
+                Opcodes.INVOKEVIRTUAL,
+                wrapperClazz.getName().replaceAll("\\.", "/"),
+                methodName,
+                getMethodDescriptor(wrapperClazz, methodName, null),
+                false
+        );
+    }
+
+    @SneakyThrows
+    public static String getMethodDescriptor(Class<?> clazz, String methodName, Class<?>...parameterTypes) {
+        return Type.getMethodDescriptor(clazz.getDeclaredMethod(methodName, parameterTypes));
+    }
+
+    public static String getWrapperValueMethodName(Class<?> wrapperClass) {
+        if (Integer.class.isAssignableFrom(wrapperClass)) {
+            return "intValue";
+        }
+
+        if (Short.class.isAssignableFrom(wrapperClass)) {
+            return "shortValue";
+        }
+
+        if (Byte.class.isAssignableFrom(wrapperClass)) {
+            return "byteValue";
+        }
+
+        if (Character.class.isAssignableFrom(wrapperClass)) {
+            return "charValue";
+        }
+
+        if (Long.class.isAssignableFrom(wrapperClass)) {
+            return "longValue";
+        }
+
+        if (Float.class.isAssignableFrom(wrapperClass)) {
+            return "floatValue";
+        }
+
+        if (Double.class.isAssignableFrom(wrapperClass)) {
+            return "doubleValue";
+        }
+
+        throw new RuntimeException("Unable to find wrapper class: " + wrapperClass);
     }
 
     private static int opcodeByClass(Class<?> clazz, int iOpcode, int fOpcode, int dOpcode, int lOpcode, int aOpcode) {
